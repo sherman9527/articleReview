@@ -1,0 +1,7 @@
+python-docx>=0.8.11
+PyMuPDF>=1.23.0
+chardet>=5.0.0
+isbnlib>=3.10.0
+habanero>=2.0.0
+scholarly>=1.7.0
+libgen-api-enhanced>=1.0.0

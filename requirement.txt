@@ -1,0 +1,639 @@
+project:
+  name: Chinese AI Publishing Review System
+  version: 1.0
+  language: zh-CN
+  type: enterprise_content_governance_platform
+
+vision:
+  description: >
+    构建一个面向中文出版行业的 AI 审稿、校对、引用核验、
+    敏感词治理、出版审计与多轮审核工作流平台。
+
+  goals:
+    - 自动化中文出版审稿流程
+    - 降低编辑与校对成本
+    - 提升出版一致性与合规性
+    - 建立全链路审计能力
+    - 支持多轮 AI + 人工协同审核
+    - 建立长期出版知识资产
+
+system_characteristics:
+  - multi_agent
+  - workflow_driven
+  - audit_traceable
+  - policy_based
+  - version_aware
+  - human_in_the_loop
+  - enterprise_grade
+
+# ============================================================
+# 1. 核心业务流程
+# ============================================================
+
+publishing_workflow:
+
+  stages:
+
+    - id: submission
+      name: 投稿阶段
+      responsibilities:
+        - 上传稿件
+        - 文档解析
+        - 元数据提取
+        - 生成文档ID
+        - 初始化版本
+
+      supported_formats:
+        - docx
+        - pdf
+        - epub
+        - markdown
+        - latex
+        - txt
+
+      outputs:
+        - document_id
+        - version_id
+        - chapter_tree
+        - metadata
+        - extracted_references
+        - extracted_images
+        - extracted_tables
+
+    - id: ai_precheck
+      name: AI初审
+
+      responsibilities:
+        - 错别字检测
+        - 语法检测
+        - AI生成痕迹检测
+        - 敏感内容检测
+        - 格式检测
+        - 重复内容检测
+
+      outputs:
+        - precheck_report
+        - risk_score
+        - sensitive_hits
+
+    - id: first_review
+      name: 一审（语言编辑）
+
+      responsibilities:
+        - 中文表达优化
+        - 标点规范
+        - 术语统一
+        - 出版格式统一
+
+      outputs:
+        - language_review_report
+        - modification_suggestions
+
+    - id: second_review
+      name: 二审（引用与事实审核）
+
+      responsibilities:
+        - 引文解析
+        - DOI验证
+        - ISBN验证
+        - 页码核验
+        - 语义一致性验证
+        - 事实一致性验证
+
+      outputs:
+        - citation_report
+        - hallucination_report
+        - fact_check_report
+
+    - id: third_review
+      name: 三审（出版规范审核）
+
+      responsibilities:
+        - 目录检查
+        - 图表编号检查
+        - 参考文献格式检查
+        - 页眉页脚检查
+        - 图片版权检查
+
+      outputs:
+        - publication_standard_report
+
+    - id: final_review
+      name: 终审
+
+      responsibilities:
+        - 意识形态审核
+        - 法律风险审核
+        - 政策风险审核
+        - 舆情风险审核
+
+      outputs:
+        - final_risk_report
+        - publish_decision
+
+    - id: archive
+      name: 归档阶段
+
+      responsibilities:
+        - 保存最终版本
+        - 保存审计日志
+        - 保存diff
+        - 保存电子签名
+
+# ============================================================
+# 2. 多 Agent 架构
+# ============================================================
+
+agents:
+
+  - id: structure_agent
+    responsibilities:
+      - 文档结构解析
+      - 章节树提取
+      - 标题识别
+      - 脚注识别
+
+  - id: ocr_agent
+    responsibilities:
+      - PDF OCR
+      - 扫描件OCR
+      - 古籍OCR
+      - 竖排OCR
+
+  - id: sensitive_agent
+    responsibilities:
+      - 敏感词检测
+      - 政治风险检测
+      - 规避词识别
+      - Unicode变体识别
+
+  - id: language_agent
+    responsibilities:
+      - 错别字纠正
+      - 语法修复
+      - 风格统一
+      - 出版语言规范
+
+  - id: citation_agent
+    responsibilities:
+      - 引文识别
+      - 引文格式解析
+      - 页码抽取
+      - DOI抽取
+
+  - id: citation_verify_agent
+    responsibilities:
+      - 下载引用文献
+      - OCR文献
+      - 页码定位
+      - 引文比对
+
+  - id: fact_check_agent
+    responsibilities:
+      - 数据事实核验
+      - 时间核验
+      - 人名地名核验
+
+  - id: policy_agent
+    responsibilities:
+      - 政策风险审核
+      - 舆情风险审核
+      - 出版合规审核
+
+  - id: audit_agent
+    responsibilities:
+      - 审计日志生成
+      - diff生成
+      - 修稿报告生成
+
+# ============================================================
+# 3. 敏感词系统
+# ============================================================
+
+sensitive_word_system:
+
+  architecture:
+    type: dynamic_policy_driven
+
+  levels:
+    - L1_national_law
+    - L2_publishing_regulation
+    - L3_platform_policy
+    - L4_customer_customized
+    - L5_ai_discovered
+
+  detection_capabilities:
+    - exact_match
+    - synonym_match
+    - pinyin_match
+    - homophone_match
+    - unicode_variant_match
+    - emoji_variant_match
+    - whitespace_split_match
+    - ocr_noise_match
+
+  word_schema:
+
+    type: object
+
+    fields:
+      - id
+      - word
+      - category
+      - risk_level
+      - replacement_strategy
+      - replacement_candidates
+      - source
+      - effective_date
+      - expiration_date
+      - status
+      - created_by
+      - updated_at
+
+  replacement_strategies:
+    - manual_review
+    - auto_replace
+    - block_submission
+    - warning_only
+
+  capabilities:
+    - hot_reload
+    - gray_release
+    - version_control
+    - tenant_isolation
+    - rollback
+
+# ============================================================
+# 4. 引文核验系统
+# ============================================================
+
+citation_verification_system:
+
+  supported_formats:
+    - GB_T_7714
+    - APA
+    - MLA
+    - Chicago
+
+  extraction_fields:
+    - title
+    - author
+    - isbn
+    - doi
+    - publisher
+    - version
+    - page
+    - year
+
+  download_sources:
+    - crossref
+    - cnki
+    - google_scholar
+    - national_library
+    - publisher_api
+    - jstor
+    - arxiv
+    - internal_library
+
+  citation_material_center:
+
+    responsibilities:
+      - document_cache
+      - pdf_storage
+      - epub_storage
+      - ocr_storage
+      - vector_index
+      - page_index
+
+    deduplication:
+      strategies:
+        - isbn
+        - doi
+        - file_hash
+
+  page_level_verification:
+
+    steps:
+      - locate_document_version
+      - download_document
+      - perform_ocr
+      - locate_page
+      - extract_page_content
+      - semantic_compare
+
+  semantic_validation_levels:
+
+    - level_1_exact_match
+    - level_2_semantic_similarity
+    - level_3_fact_consistency
+    - level_4_context_distortion_detection
+
+  hallucination_detection:
+    capabilities:
+      - fake_doi_detection
+      - fake_isbn_detection
+      - fake_page_detection
+      - fake_reference_detection
+
+# ============================================================
+# 5. 审计系统
+# ============================================================
+
+audit_system:
+
+  requirements:
+    - traceable
+    - explainable
+    - revertible
+    - immutable
+
+  audit_log_schema:
+
+    fields:
+      - operation_id
+      - operator
+      - operator_type
+      - before_content
+      - after_content
+      - modification_reason
+      - confidence_score
+      - timestamp
+      - document_id
+      - version_id
+
+  diff_system:
+    supported_types:
+      - paragraph_diff
+      - sentence_diff
+      - token_diff
+
+  report_generation:
+    outputs:
+      - review_summary
+      - risk_summary
+      - modification_summary
+      - citation_summary
+      - sensitive_word_summary
+
+# ============================================================
+# 6. 文档解析系统
+# ============================================================
+
+document_processing:
+
+  supported_features:
+    - chapter_detection
+    - table_extraction
+    - image_extraction
+    - footnote_extraction
+    - formula_extraction
+    - bibliography_extraction
+
+  ocr_requirements:
+    - simplified_chinese
+    - traditional_chinese
+    - vertical_layout
+    - ancient_chinese
+    - handwritten_support
+
+# ============================================================
+# 7. RAG 知识库
+# ============================================================
+
+rag_knowledge_base:
+
+  domains:
+    - publishing_standard
+    - language_standard
+    - policy_regulation
+    - citation_standard
+    - customer_custom_rules
+
+  examples:
+    - GB_T_7714
+    - 国家语言文字规范
+    - 出版社内部规范
+    - 审核案例库
+
+# ============================================================
+# 8. 规则引擎
+# ============================================================
+
+policy_engine:
+
+  architecture:
+    type: rule_based_dsl
+
+  rule_example: |
+    if:
+      category: politics
+      risk_level: high
+    then:
+      action: block_submission
+
+  supported_actions:
+    - block
+    - warning
+    - manual_review
+    - auto_replace
+    - escalate
+
+  capabilities:
+    - hot_update
+    - versioning
+    - rollback
+    - tenant_scope
+
+# ============================================================
+# 9. 权限系统
+# ============================================================
+
+permission_system:
+
+  model: RBAC
+
+  roles:
+    - author
+    - editor
+    - senior_editor
+    - chief_editor
+    - auditor
+    - administrator
+
+  capabilities:
+    - stage_based_permission
+    - electronic_signature
+    - operation_trace
+    - approval_workflow
+
+# ============================================================
+# 10. 数据架构
+# ============================================================
+
+storage_architecture:
+
+  object_storage:
+    stores:
+      - original_documents
+      - pdfs
+      - images
+      - attachments
+
+  relational_database:
+    recommended: PostgreSQL
+
+    stores:
+      - metadata
+      - workflow
+      - permissions
+      - rules
+
+  search_engine:
+    recommended: Elasticsearch
+
+    stores:
+      - ocr_text
+      - searchable_content
+
+  vector_database:
+    recommended: Milvus
+
+    stores:
+      - embeddings
+      - semantic_index
+
+  audit_storage:
+    recommended: ClickHouse
+
+    stores:
+      - audit_logs
+      - diff_logs
+      - operation_history
+
+# ============================================================
+# 11. API 设计
+# ============================================================
+
+apis:
+
+  - path: /documents/upload
+    method: POST
+    description: 上传稿件
+
+  - path: /documents/{id}/review
+    method: POST
+    description: 启动审核流程
+
+  - path: /documents/{id}/citations/verify
+    method: POST
+    description: 引文核验
+
+  - path: /documents/{id}/audit-report
+    method: GET
+    description: 获取审计报告
+
+  - path: /sensitive-words
+    method: GET
+    description: 获取敏感词库
+
+  - path: /rules
+    method: GET
+    description: 获取规则配置
+
+# ============================================================
+# 12. 推荐技术栈
+# ============================================================
+
+technology_stack:
+
+  backend:
+    - C#
+    - ASP.NET_Core
+    - Python
+    - FastAPI
+
+  ai:
+    - LLM
+    - OCR
+    - embedding
+    - rerank
+    - classifier
+
+  document_processing:
+    - PaddleOCR
+    - PyMuPDF
+    - Apache_Tika
+    - docx4j
+
+  infrastructure:
+    - Kubernetes
+    - Kafka
+    - Redis
+    - MinIO
+
+# ============================================================
+# 13. 高级能力
+# ============================================================
+
+advanced_features:
+
+  - version_aware_citation_verification
+  - multi_model_cross_review
+  - ai_hallucination_detection
+  - publishing_knowledge_graph
+  - semantic_risk_analysis
+  - automatic_revision_suggestion
+  - style_transfer_for_publishing
+
+# ============================================================
+# 14. 非功能性要求
+# ============================================================
+
+non_functional_requirements:
+
+  performance:
+    - 支持百万级文档
+    - 支持并发审核
+    - 支持增量OCR
+
+  security:
+    - 文档加密
+    - 审计不可篡改
+    - 权限隔离
+
+  reliability:
+    - 可回滚
+    - 灰度发布
+    - 容灾恢复
+
+  compliance:
+    - 出版行业合规
+    - 数据安全合规
+    - 内容审计合规
+
+# ============================================================
+# 15. 系统最终架构
+# ============================================================
+
+final_architecture:
+
+  pipeline:
+
+    - submission_system
+    - document_parser
+    - ocr_engine
+    - structure_extractor
+    - rag_knowledge_base
+    - multi_agent_review_pipeline
+    - policy_engine
+    - human_review
+    - audit_report_generator
+    - archive_system
+
+  core_assets:
+    - sensitive_word_knowledge_base
+    - citation_material_center
+    - publishing_rule_engine
+    - audit_history
+    - revision_case_database
+    - publishing_knowledge_graph

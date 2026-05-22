@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "description": "中文出版审稿敏感词库（示例版，请根据实际需要扩充）",
+  "categories": {
+    "common_errors": {
+      "description": "常见用词错误",
+      "level": "L3",
+      "strategy": "warning",
+      "words": [
+        {"word": "做为", "replacement": "作为"},
+        {"word": "以经", "replacement": "已经"},
+        {"word": "到底", "replacement": null, "note": "口语化，出版物中酌情使用"},
+        {"word": "的的", "replacement": "的", "note": "重复用字"},
+        {"word": "了了", "replacement": "了", "note": "重复用字"},
+        {"word": "是是", "replacement": "是", "note": "重复用字"},
+        {"word": "侯选", "replacement": "候选"},
+        {"word": "蓝天白云白云", "replacement": null, "note": "重复词组"},
+        {"word": "其它", "replacement": "其他", "note": "规范用法"},
+        {"word": "份量", "replacement": "分量"},
+        {"word": "象征性", "replacement": null, "note": "检查是否应为'像'"},
+        {"word": "帐号", "replacement": "账号"},
+        {"word": "帐户", "replacement": "账户"},
+        {"word": "覆盖面积面积", "replacement": null, "note": "重复"},
+        {"word": "连接因特网", "replacement": "连接互联网", "note": "规范用语"},
+        {"word": "因特网", "replacement": "互联网", "note": "规范用语"},
+        {"word": "网路", "replacement": "网络"},
+        {"word": "唯一的一个", "replacement": "唯一的", "note": "语义重复"},
+        {"word": "最为最", "replacement": null, "note": "重复副词"},
+        {"word": "非常十分", "replacement": null, "note": "重复副词"}
+      ]
+    },
+    "punctuation_errors": {
+      "description": "标点符号错误",
+      "level": "L3",
+      "strategy": "auto_replace",
+      "words": [
+        {"word": ",", "replacement": "，", "note": "英文逗号应替换为中文逗号"},
+        {"word": ".", "replacement": "。", "note": "英文句号应替换为中文句号（代码/URL除外）"},
+        {"word": ";", "replacement": "；", "note": "英文分号应替换为中文分号"},
+        {"word": ":", "replacement": "：", "note": "英文冒号应替换为中文冒号（代码除外）"},
+        {"word": "?", "replacement": "？", "note": "英文问号应替换为中文问号"},
+        {"word": "!", "replacement": "！", "note": "英文感叹号应替换为中文感叹号"}
+      ]
+    },
+    "publishing_standards": {
+      "description": "出版规范用语",
+      "level": "L2",
+      "strategy": "warning",
+      "words": [
+        {"word": "公元前后", "replacement": null, "note": "应明确标注公元前X年或公元X年"},
+        {"word": "几十万", "replacement": null, "note": "出版物中应使用确切数字"},
+        {"word": "大概", "replacement": null, "note": "学术出版物中应避免模糊表述"},
+        {"word": "可能大概", "replacement": null, "note": "重复模糊词"},
+        {"word": "众所周知", "replacement": null, "note": "学术写作中应避免此类表述"}
+      ]
+    },
+    "political_sample": {
+      "description": "政治相关示例（请根据实际政策要求配置）",
+      "level": "L1",
+      "strategy": "manual_review",
+      "words": [
+        {"word": "台湾国", "replacement": null, "note": "涉及领土主权表述"},
+        {"word": "满洲国", "replacement": null, "note": "历史表述需审慎"},
+        {"word": "支那", "replacement": null, "note": "歧视性用语"}
+      ]
+    },
+    "legal_terms": {
+      "description": "法律相关敏感用语",
+      "level": "L2",
+      "strategy": "manual_review",
+      "words": [
+        {"word": "诽谤", "replacement": null, "note": "涉及法律风险"},
+        {"word": "抄袭", "replacement": null, "note": "涉及知识产权，需核实"},
+        {"word": "剽窃", "replacement": null, "note": "涉及知识产权，需核实"}
+      ]
+    }
+  }
+}
