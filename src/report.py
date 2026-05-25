@@ -112,11 +112,11 @@ def _section_structure(sr: dict) -> str:
 
     chapters = sr.get("chapters", [])
     if chapters:
-        parts.append(f'<h3>识别到的章节（共 {len(chapters)} 个）</h3><ul class="chapter-list">')
-        for ch in chapters[:40]:
+        parts.append(f'<details><summary><h3 style="display:inline">识别到的章节（共 {len(chapters)} 个）— 点击展开</h3></summary><ul class="chapter-list">')
+        for ch in chapters[:80]:
             indent = int(ch.get("level", 1)) - 1
             parts.append(f'<li style="margin-left:{indent*1.5}em">{esc(ch.get("path", ""))} {esc(ch.get("title", ""))}</li>')
-        parts.append('</ul>')
+        parts.append('</ul></details>')
 
     issues = sr.get("structure_issues", [])
     if issues:
@@ -140,16 +140,20 @@ def _section_sensitive(sw: dict) -> str:
 
     all_hits = sw.get("all_hits", [])
     if all_hits:
-        parts.append(f'<h3>命中记录（共 {len(all_hits)} 项）</h3>')
-        parts.append('<table><thead><tr><th>#</th><th>敏感词</th><th>类别</th><th>等级</th><th>匹配方式</th><th>策略</th><th>上下文</th></tr></thead><tbody>')
-        for i, h in enumerate(all_hits[:60], 1):
+        parts.append(f'<details open><summary><h3 style="display:inline">命中记录（共 {len(all_hits)} 项）— 点击折叠</h3></summary>')
+        parts.append('<table><thead><tr><th>#</th><th>位置</th><th>敏感词</th><th>类别</th><th>等级</th><th>匹配方式</th><th>策略</th><th>上下文</th></tr></thead><tbody>')
+        for i, h in enumerate(all_hits[:200], 1):
             lvl_cls = "lvl-" + h.get("level", "L3").lower()
             ctx = esc(h.get("context", ""))[:80]
-            parts.append(f'<tr class="{lvl_cls}"><td>{i}</td><td><strong>{esc(h.get("word", ""))}</strong></td>'
+            loc = esc(h.get("location", ""))
+            parts.append(f'<tr class="{lvl_cls}"><td>{i}</td><td><strong>{loc}</strong></td>'
+                         f'<td><strong>{esc(h.get("word", ""))}</strong></td>'
                          f'<td>{esc(h.get("category", ""))}</td><td>{esc(h.get("level", ""))}</td>'
                          f'<td>{esc(h.get("match_type", ""))}</td><td>{esc(h.get("strategy", ""))}</td>'
                          f'<td class="ctx">{ctx}</td></tr>')
-        parts.append('</tbody></table>')
+        if len(all_hits) > 200:
+            parts.append(f'<tr><td colspan="8" style="text-align:center;color:#6b7280">... 仅显示前 200 条，共 {len(all_hits)} 条 ...</td></tr>')
+        parts.append('</tbody></table></details>')
     else:
         parts.append('<p class="ok">未发现敏感词。</p>')
     return "\n".join(parts)
@@ -249,6 +253,7 @@ def _section_citation_verification(cv_list: list) -> str:
         "verified": ("已验证", "badge-ok"),
         "partial": ("部分验证", "badge-warn"),
         "failed": ("未通过", "badge-error"),
+        "unverifiable": ("暂无法核验", "badge-warn"),
         "skipped": ("跳过", ""),
         "pending": ("待验证", ""),
     }
@@ -331,7 +336,15 @@ def _section_policy(pr: dict) -> str:
 # ---------------------------------------------------------------------------
 
 def esc(s: str) -> str:
-    return html_mod.escape(str(s))
+    import re as _re
+    s = str(s)
+    # Strip page markers like 【第X页】 that may bleed into AI summaries
+    s = _re.sub(r'【第\d+页】', '', s)
+    # If the string looks like raw JSON / code block, show a truncated placeholder
+    stripped = s.strip()
+    if stripped.startswith('```') or (stripped.startswith('{') and len(stripped) > 200):
+        s = stripped[:120].split('\n')[0] + ' …（AI输出格式异常）'
+    return html_mod.escape(s)
 
 def _nl2br(s: str) -> str:
     return s.replace("\n", "<br>\n")
@@ -418,85 +431,101 @@ def _wrap_html(title: str, body: str) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{title}</title>
 <style>
-  :root {{
-    --c-bg: #fafafa; --c-card: #fff; --c-text: #222; --c-muted: #666;
-    --c-border: #e0e0e0; --c-accent: #1a73e8;
-    --c-ok: #0d7a3e; --c-warn: #e67e22; --c-error: #c0392b;
-    --c-high: #fde8e8; --c-med: #fef3e2; --c-low: #e8f5e9;
-  }}
   * {{ box-sizing: border-box; margin: 0; padding: 0; }}
   body {{
-    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
-    background: var(--c-bg); color: var(--c-text);
-    max-width: 1000px; margin: 0 auto; padding: 24px 32px;
-    line-height: 1.7; font-size: 15px;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5; color: #1a1a2e;
+    max-width: 1080px; margin: 0 auto; padding: 32px 24px;
+    line-height: 1.8; font-size: 15px;
   }}
-  h1 {{ font-size: 28px; margin-bottom: 16px; border-bottom: 3px solid var(--c-accent); padding-bottom: 8px; }}
-  h2 {{ font-size: 20px; margin: 24px 0 12px; color: var(--c-accent); }}
-  h3 {{ font-size: 16px; margin: 16px 0 8px; }}
+  h1 {{
+    font-size: 26px; margin-bottom: 24px; padding: 20px 28px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    color: #ffffff; border-radius: 10px; letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.07);
+  }}
+  h2 {{
+    font-size: 18px; margin: 28px 0 14px; color: #2563eb;
+    padding-bottom: 8px; border-bottom: 2px solid #dbeafe;
+  }}
+  h3 {{ font-size: 15px; margin: 16px 0 8px; color: #374151; }}
   p {{ margin: 8px 0; }}
-  hr {{ border: none; border-top: 1px solid var(--c-border); margin: 24px 0; }}
-  strong {{ color: #111; }}
-  code {{ background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 13px; }}
-  del {{ color: var(--c-error); text-decoration: line-through; }}
+  hr {{ border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }}
+  strong {{ color: #111827; }}
+  code {{ background: #f3f4f6; padding: 2px 7px; border-radius: 4px; font-size: 13px; color: #6366f1; }}
+  del {{ color: #dc2626; text-decoration: line-through; }}
 
-  /* Tables */
   table {{
-    width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px;
+    width: 100%; border-collapse: collapse;
+    margin: 12px 0; font-size: 14px;
+    border: 1px solid #e5e7eb;
   }}
   th, td {{
-    padding: 8px 12px; border: 1px solid var(--c-border); text-align: left; vertical-align: top;
+    padding: 10px 14px; text-align: left; vertical-align: top;
+    border-bottom: 1px solid #e5e7eb;
   }}
-  th {{ background: #f5f7fa; font-weight: 600; white-space: nowrap; }}
+  th {{
+    background: #f1f5f9;
+    font-weight: 600; white-space: nowrap; color: #374151; font-size: 13px;
+  }}
+  tr:last-child td {{ border-bottom: none; }}
   table.info-table {{ width: auto; }}
-  table.info-table th {{ width: 120px; background: var(--c-accent); color: #fff; }}
+  table.info-table th {{
+    width: 120px; background: #1e3a5f;
+    color: #ffffff; font-size: 14px;
+  }}
   table.compact {{ width: auto; }}
-  .ctx {{ font-size: 12px; color: var(--c-muted); max-width: 280px; word-break: break-all; }}
+  .ctx {{ font-size: 12px; color: #6b7280; max-width: 280px; word-break: break-all; }}
 
-  /* Risk box */
   .risk-box {{
-    display: flex; align-items: center; gap: 20px;
-    padding: 16px 24px; border-radius: 8px; margin: 16px 0;
-    font-size: 16px;
+    display: flex; align-items: center; gap: 24px;
+    padding: 20px 28px; border-radius: 10px; margin: 20px 0; font-size: 16px;
   }}
-  .risk-box .score {{ font-size: 48px; font-weight: 700; }}
-  .risk-box .score small {{ font-size: 20px; font-weight: 400; }}
-  .risk-box .label {{ font-size: 22px; font-weight: 600; }}
-  .risk-box .detail {{ color: var(--c-muted); }}
-  .risk-low {{ background: var(--c-low); color: var(--c-ok); }}
-  .risk-med {{ background: var(--c-med); color: var(--c-warn); }}
-  .risk-high {{ background: var(--c-high); color: var(--c-error); }}
+  .risk-box .score {{ font-size: 52px; font-weight: 800; line-height: 1; }}
+  .risk-box .score small {{ font-size: 20px; font-weight: 400; opacity: .7; }}
+  .risk-box .label {{ font-size: 22px; font-weight: 700; }}
+  .risk-box .detail {{ color: #6b7280; font-size: 14px; }}
+  .risk-low {{ background: #d1fae5; color: #059669; }}
+  .risk-med {{ background: #fef3c7; color: #d97706; }}
+  .risk-high {{ background: #fecaca; color: #dc2626; }}
 
-  /* Severity colors */
-  .sev-high td:first-child, .sev-critical td:first-child {{ border-left: 4px solid var(--c-error); }}
-  .sev-medium td:first-child {{ border-left: 4px solid var(--c-warn); }}
-  .sev-low td:first-child {{ border-left: 4px solid var(--c-ok); }}
-  .lvl-l1 {{ background: #fde8e8; }}
-  .lvl-l2 {{ background: #fef3e2; }}
+  .sev-high td:first-child, .sev-critical td:first-child {{ border-left: 4px solid #dc2626; }}
+  .sev-medium td:first-child {{ border-left: 4px solid #d97706; }}
+  .sev-low td:first-child {{ border-left: 4px solid #059669; }}
+  .lvl-l1 {{ background: #fef2f2; }}
+  .lvl-l2 {{ background: #fffbeb; }}
 
-  /* Status */
-  .ok {{ color: var(--c-ok); }}
-  .warn {{ color: var(--c-warn); }}
-  .error {{ color: var(--c-error); }}
+  .badge {{
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+  }}
+  .badge-ok {{ background: #d1fae5; color: #065f46; }}
+  .badge-warn {{ background: #fef3c7; color: #92400e; }}
+  .badge-error {{ background: #fecaca; color: #991b1b; }}
 
-  /* Summary */
+  .ok {{ color: #059669; font-weight: 600; }}
+  .warn {{ color: #d97706; font-weight: 600; }}
+  .error {{ color: #dc2626; font-weight: 600; }}
+
   .summary {{
-    background: #f8f9fc; border-left: 4px solid var(--c-accent);
-    padding: 16px 20px; margin: 12px 0; border-radius: 0 6px 6px 0;
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 18px 22px; margin: 16px 0; border-radius: 0 10px 10px 0; line-height: 2;
   }}
 
-  /* Chapter list */
   .chapter-list {{ list-style: none; padding-left: 0; }}
-  .chapter-list li {{ padding: 2px 0; }}
-  .chapter-list li::before {{ content: "\\25B8 "; color: var(--c-accent); }}
+  .chapter-list li {{ padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }}
+  .chapter-list li:last-child {{ border-bottom: none; }}
+  .chapter-list li::before {{ content: "\\25B8 "; color: #2563eb; font-weight: bold; }}
 
-  .footer {{ color: var(--c-muted); font-size: 13px; margin-top: 8px; }}
+  .file-link {{ color: #2563eb; text-decoration: none; font-weight: 500; }}
+  .footer {{ color: #6b7280; font-size: 13px; margin-top: 12px; text-align: center; }}
 
   @media print {{
-    body {{ max-width: 100%; padding: 12px; }}
-    .risk-box {{ page-break-inside: avoid; }}
+    body {{ max-width: 100%; padding: 12px; background: #ffffff; }}
     table {{ page-break-inside: auto; }}
     tr {{ page-break-inside: avoid; }}
+    h1 {{ -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
   }}
 </style>
 </head>

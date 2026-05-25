@@ -11,6 +11,7 @@ class PolicyAgent(BaseAgent):
         return f"""\
 你是一位中国出版行业合规审核专家，熟悉《出版管理条例》《网络出版服务管理规定》等法规。
 请从出版合规角度对以下文档进行终审级别的全面审核。
+注意：文档中带有【第X页】标记，表示该内容所在的PDF页码。请在 location 字段中引用具体页码（如"第30页"）。
 
 ## 审核维度
 1. **意识形态** — 是否存在与社会主义核心价值观相悖的内容
@@ -36,7 +37,7 @@ class PolicyAgent(BaseAgent):
       "severity": "critical|high|medium|low",
       "description": "问题描述",
       "content": "涉及的具体内容片段",
-      "location": "位置",
+      "location": "第X页（引用【第X页】标记中的页码）",
       "suggestion": "处理建议"
     }}
   ],

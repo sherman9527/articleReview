@@ -15,6 +15,7 @@ SENSITIVE_WORDS_FILE = DATA_DIR / "sensitive_words.json"
 CLAUDE_CMD = os.environ.get("CLAUDE_CMD", "claude")
 LLM_TIMEOUT = int(os.environ.get("LLM_TIMEOUT", "600"))  # seconds per call
 MAX_TEXT_LENGTH = int(os.environ.get("MAX_TEXT_LENGTH", "80000"))  # chars per agent call
+MAX_PAGES = int(os.environ.get("MAX_PAGES", "50"))  # max pages to parse from PDF
 
 # Ensure output dir exists
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

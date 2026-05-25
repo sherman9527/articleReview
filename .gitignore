@@ -14,3 +14,6 @@ build/
 *.swo
 .DS_Store
 Thumbs.db
+book/
+fix_structure.py
+checkpoint.json

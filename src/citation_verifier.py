@@ -141,18 +141,20 @@ def _crossref_to_dict(item: dict) -> dict:
 # Google Scholar search (scholarly)
 # ---------------------------------------------------------------------------
 
-def search_scholar(title: str, author: str = "") -> list[dict]:
-    """Search Google Scholar for a publication."""
+def search_scholar(title: str, author: str = "", timeout: int = 30) -> list[dict]:
+    """Search Google Scholar for a publication (with timeout)."""
     try:
         from scholarly import scholarly as sch
     except ImportError:
         return []
 
-    results = []
-    query = f'{author} "{title}"' if author else title
-    try:
+    import concurrent.futures
+
+    def _do_search():
+        results = []
+        query = f'{author} "{title}"' if author else title
         search_results = sch.search_pubs(query)
-        for _ in range(3):  # max 3 results
+        for _ in range(3):
             try:
                 pub = next(search_results)
                 bib = pub.get("bib", {})
@@ -169,9 +171,17 @@ def search_scholar(title: str, author: str = "") -> list[dict]:
                 })
             except StopIteration:
                 break
+        return results
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_do_search)
+            return future.result(timeout=timeout)
+    except concurrent.futures.TimeoutError:
+        print(f"        Google Scholar 搜索超时（{timeout}s）", flush=True)
+        return []
     except Exception:
-        pass
-    return results
+        return []
 
 
 # ---------------------------------------------------------------------------
@@ -264,31 +274,57 @@ def _download_file(url: str, target: Path, timeout: int = 60):
 # Unified verification pipeline
 # ---------------------------------------------------------------------------
 
-def verify_citation(rec: CitationRecord, refs_dir: Path) -> CitationRecord:
-    """Run all verification steps on a single CitationRecord."""
+def _quick_download(rec: CitationRecord, refs_dir: Path) -> CitationRecord:
+    """Phase 1: fast local verification — ISBN + LibGen download only."""
     if rec.citation_type == "same_as_above":
         rec.overall_status = "skipped"
         rec.verification_notes.append("同上书引用，跳过独立核验")
         return rec
 
-    print(f"    [{rec.index}] 核验: {rec.title[:40]}...", flush=True)
+    print(f"    [{rec.index}] 快速下载: {rec.title[:50]}...", flush=True)
 
-    # Step 1: ISBN verification
+    # ISBN verification
     if rec.isbn:
-        print(f"        ISBN 验证...", flush=True)
         isbn_result = verify_isbn(rec.isbn)
         rec.isbn_valid = isbn_result.get("valid", False)
         if isbn_result.get("found"):
             rec.metadata_found = True
             rec.metadata_source = "isbnlib"
             rec.metadata = isbn_result.get("metadata", {})
-            rec.verification_notes.append(f"ISBN {rec.isbn} 验证通过，元数据已获取")
-        elif rec.isbn_valid:
-            rec.verification_notes.append(f"ISBN {rec.isbn} 格式有效，但未找到元数据")
-        else:
-            rec.verification_notes.append(f"ISBN {rec.isbn} 格式无效")
+            rec.verification_notes.append(f"ISBN {rec.isbn} 验证通过")
 
-    # Step 2: CrossRef search (especially for DOI / journal articles)
+    # LibGen search & download (fastest source for full PDFs)
+    if rec.title:
+        try:
+            lg_results = search_libgen(title=rec.title, author=rec.authors)
+            if lg_results:
+                best = lg_results[0]
+                rec.verification_notes.append(
+                    f"LibGen 找到 {len(lg_results)} 条"
+                    f"（{best.get('extension', '?')} / {best.get('size', '?')}）"
+                )
+                dl_path = download_from_libgen(best, refs_dir)
+                if dl_path:
+                    rec.download_path = dl_path
+                    rec.download_source = "libgen"
+                    rec.overall_status = "verified"
+                    rec.verification_notes.append(f"已下载: {Path(dl_path).name}")
+                    return rec
+                else:
+                    if best.get("mirror_1"):
+                        rec.download_url = best["mirror_1"]
+        except Exception as e:
+            rec.verification_notes.append(f"LibGen: {e}")
+
+    rec.overall_status = "pending"  # needs online verification
+    return rec
+
+
+def _online_verify(rec: CitationRecord, refs_dir: Path) -> CitationRecord:
+    """Phase 2: slower online verification — CrossRef + Google Scholar."""
+    print(f"    [{rec.index}] 在线核验: {rec.title[:50]}...", flush=True)
+
+    # CrossRef
     if rec.doi or rec.title:
         print(f"        CrossRef 搜索...", flush=True)
         cr_results = search_crossref(title=rec.title, author=rec.authors, doi=rec.doi)
@@ -302,77 +338,46 @@ def verify_citation(rec: CitationRecord, refs_dir: Path) -> CitationRecord:
         else:
             rec.verification_notes.append("CrossRef 未找到匹配")
 
-    # Step 3: Google Scholar search
-    if rec.title:
+    # Google Scholar — disabled: scholarly library hangs on Windows due to
+    # Google anti-bot (CAPTCHA). Most citations in this corpus are news/policy
+    # sources that Scholar can't find anyway. CrossRef + LibGen are sufficient.
+    # To re-enable, set env ENABLE_SCHOLAR=1.
+    if rec.title and os.environ.get("ENABLE_SCHOLAR"):
         print(f"        Google Scholar 搜索...", flush=True)
         try:
             gs_results = search_scholar(title=rec.title, author=rec.authors)
             rec.scholar_results = gs_results
             if gs_results:
                 rec.verification_notes.append(
-                    f"Google Scholar 找到 {len(gs_results)} 条结果"
+                    f"Scholar 找到 {len(gs_results)} 条"
                     f"（被引 {gs_results[0].get('num_citations', '?')} 次）"
                 )
-                # Check for free PDF
                 for r in gs_results:
                     if r.get("eprint_url"):
                         rec.download_url = r["eprint_url"]
                         rec.download_source = "google_scholar"
-                        rec.verification_notes.append(f"Scholar 提供 eprint URL")
                         break
             else:
-                rec.verification_notes.append("Google Scholar 未找到匹配")
+                rec.verification_notes.append("Scholar 未找到匹配")
         except Exception as e:
-            rec.verification_notes.append(f"Google Scholar 搜索出错: {e}")
+            rec.verification_notes.append(f"Scholar 出错: {e}")
 
-    # Step 4: LibGen search & download
-    if rec.title:
-        print(f"        Library Genesis 搜索...", flush=True)
-        try:
-            lg_results = search_libgen(title=rec.title, author=rec.authors)
-            if lg_results:
-                best = lg_results[0]
-                rec.verification_notes.append(
-                    f"LibGen 找到 {len(lg_results)} 条结果"
-                    f"（{best.get('extension', '?')} / {best.get('size', '?')}）"
-                )
-                # Try download
-                print(f"        尝试从 LibGen 下载...", flush=True)
-                dl_path = download_from_libgen(best, refs_dir)
-                if dl_path:
-                    rec.download_path = dl_path
-                    rec.download_source = "libgen"
-                    rec.verification_notes.append(f"已从 LibGen 下载: {Path(dl_path).name}")
-                else:
-                    rec.verification_notes.append("LibGen 下载失败（可能需要手动下载）")
-                    if best.get("mirror_1"):
-                        rec.download_url = best["mirror_1"]
-            else:
-                rec.verification_notes.append("LibGen 未找到匹配")
-        except Exception as e:
-            rec.verification_notes.append(f"LibGen 搜索出错: {e}")
-
-    # Step 5: Determine overall status
+    # Final status
     if rec.download_path:
         rec.overall_status = "verified"
     elif rec.metadata_found or rec.scholar_results:
         rec.overall_status = "partial"
     else:
-        rec.overall_status = "failed"
+        rec.overall_status = "unverifiable"
+        rec.verification_notes.append("暂时无法核验（来源可能为新闻网页、内部文件等非学术出版物）")
 
     return rec
 
 
-def verify_all_citations(citations: list[CitationRecord], refs_dir: Path) -> list[CitationRecord]:
-    """Verify a list of citations."""
-    refs_dir.mkdir(parents=True, exist_ok=True)
-    verified = []
-    for rec in citations:
-        try:
-            verified.append(verify_citation(rec, refs_dir))
-        except Exception as e:
-            rec.verification_notes.append(f"核验异常: {e}")
-            rec.overall_status = "failed"
-            verified.append(rec)
-        time.sleep(1)  # polite delay between searches
-    return verified
+def verify_citation(rec: CitationRecord, refs_dir: Path) -> CitationRecord:
+    """Run all verification steps on a single CitationRecord (two-phase)."""
+    rec = _quick_download(rec, refs_dir)
+    if rec.overall_status in ("verified", "skipped"):
+        return rec
+    rec = _online_verify(rec, refs_dir)
+    return rec

@@ -29,19 +29,6 @@
         {"word": "非常十分", "replacement": null, "note": "重复副词"}
       ]
     },
-    "punctuation_errors": {
-      "description": "标点符号错误",
-      "level": "L3",
-      "strategy": "auto_replace",
-      "words": [
-        {"word": ",", "replacement": "，", "note": "英文逗号应替换为中文逗号"},
-        {"word": ".", "replacement": "。", "note": "英文句号应替换为中文句号（代码/URL除外）"},
-        {"word": ";", "replacement": "；", "note": "英文分号应替换为中文分号"},
-        {"word": ":", "replacement": "：", "note": "英文冒号应替换为中文冒号（代码除外）"},
-        {"word": "?", "replacement": "？", "note": "英文问号应替换为中文问号"},
-        {"word": "!", "replacement": "！", "note": "英文感叹号应替换为中文感叹号"}
-      ]
-    },
     "publishing_standards": {
       "description": "出版规范用语",
       "level": "L2",

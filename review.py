@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from src.document_parser import parse_document, SUPPORTED_FORMATS
 from src.workflow import run_review_pipeline
 from src.report import generate_report
+from src.email_sender import send_review_email
 
 
 BANNER = """
@@ -89,6 +90,22 @@ def main():
     else:
         print(f"        (无下载文件)")
     print(f"{'='*50}")
+
+    # ---- Send email ----
+    print(f"\n正在发送审核报告邮件 ...", flush=True)
+    from src import config as _cfg
+    max_pages = getattr(_cfg, 'MAX_PAGES', 0)
+    page_range = f"（第1-{max_pages}页）" if max_pages else ""
+    email_result = send_review_email(
+        book_name=f"{base_name}{page_range}",
+        html_report_path=report_path,
+        refs_dir=refs_dir,
+    )
+    if email_result["success"]:
+        print(f"📧 邮件发送成功 | {email_result['subject']} | {email_result['recipients']} 位收件人"
+              f"{' | 含附件' if email_result.get('has_attachment') else ''}")
+    else:
+        print(f"📧 邮件发送失败: {email_result['error']}", file=sys.stderr)
 
 
 if __name__ == "__main__":

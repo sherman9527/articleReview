@@ -59,16 +59,67 @@ def _parse_pdf(path: Path) -> ParsedDocument:
             "运行: pip install PyMuPDF"
         )
 
+    from . import config
+
     doc = fitz.open(str(path))
+    total_pages = len(doc)
+    max_pages = getattr(config, 'MAX_PAGES', 0) or total_pages
     pages_text: list[str] = []
-    for page in doc:
-        pages_text.append(page.get_text())
+    for i, page in enumerate(doc, 1):
+        if i > max_pages:
+            break
+        page_text = page.get_text()
+        if page_text.strip():
+            cleaned = _clean_pdf_page(page_text)
+            if cleaned.strip():
+                pages_text.append(f"【第{i}页】\n{cleaned}")
     doc.close()
 
     text = "\n\n".join(pages_text)
     parsed = _build_doc(path, text)
-    parsed.page_count = len(pages_text)
+    parsed.page_count = total_pages
     return parsed
+
+
+def _clean_pdf_page(text: str) -> str:
+    """Remove garbled lines from PDF-extracted text.
+
+    PyMuPDF sometimes produces garbage for footnotes, formulas, page headers,
+    and poorly-encoded fonts. We filter out lines that look like encoding
+    artifacts so they don't pollute the analysis.
+    """
+    cleaned_lines = []
+    for line in text.split("\n"):
+        line_s = line.strip()
+        if not line_s:
+            cleaned_lines.append("")
+            continue
+
+        # Skip very short lines that are just page numbers / footnote markers
+        if len(line_s) <= 2 and not re.search(r'[\u4e00-\u9fff]', line_s):
+            continue
+
+        # Count character types
+        total = len(line_s)
+        chinese = len(re.findall(r'[\u4e00-\u9fff]', line_s))
+        latin = len(re.findall(r'[a-zA-Z]', line_s))
+        digits = len(re.findall(r'\d', line_s))
+        punct = len(re.findall(r'[\u3000-\u303f\uff00-\uffef，。；：？！、""''（）【】《》]', line_s))
+        readable = chinese + latin + digits + punct
+
+        # Drop lines where less than 40% of chars are readable
+        # (these are typically garbled symbol sequences from bad font encoding)
+        if total >= 8 and readable / total < 0.40:
+            continue
+
+        # Drop lines that are mostly non-printable or control-range characters
+        garbage = len(re.findall(r'[\x00-\x1f\x7f-\x9f]', line_s))
+        if garbage > total * 0.2:
+            continue
+
+        cleaned_lines.append(line)
+
+    return "\n".join(cleaned_lines)
 
 
 # ---------------------------------------------------------------------------
@@ -106,11 +157,11 @@ def _build_doc(path: Path, text: str) -> ParsedDocument:
     text = text.strip()
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
 
-    # Guess title from first non-empty line
+    # Guess title from first non-empty line (skip page markers like 【第X页】)
     title = ""
     for line in text.split("\n"):
         line = line.strip().lstrip("#").strip()
-        if line:
+        if line and not re.match(r'^【第\d+页】$', line):
             title = line[:80]
             break
 

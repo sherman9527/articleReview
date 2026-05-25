@@ -10,9 +10,6 @@ from .. import config
 from ..llm import call_claude_json
 from .base import BaseAgent
 
-# Characters that indicate surrounding English / code context.
-_ASCII_LETTER = re.compile(r"[a-zA-Z0-9]")
-
 
 def _load_sensitive_words() -> dict:
     """Load the sensitive word library from JSON."""
@@ -22,25 +19,42 @@ def _load_sensitive_words() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _is_english_context(text: str, pos: int, word: str) -> bool:
-    """Return True if *word* at *pos* appears inside English text / reference / URL."""
-    if len(word) > 1:
-        return False  # only single-char punctuation needs this check
-    # Look at surrounding characters (±3)
-    before = text[max(0, pos - 3) : pos]
-    after = text[pos + len(word) : pos + len(word) + 3]
-    has_ascii_before = bool(_ASCII_LETTER.search(before))
-    has_ascii_after = bool(_ASCII_LETTER.search(after))
-    return has_ascii_before or has_ascii_after
+
+def _build_page_index(text: str) -> list[tuple[int, int]]:
+    """Build an index of (char_position, page_number) from 【第X页】 markers."""
+    import re as _re
+    index = []
+    for m in _re.finditer(r'【第(\d+)页】', text):
+        index.append((m.start(), int(m.group(1))))
+    return index
+
+
+def _pos_to_page_line(text: str, pos: int, page_index: list[tuple[int, int]]) -> tuple[int, int]:
+    """Convert a character position to (page, line_within_page)."""
+    page = 0
+    page_start = 0
+    for idx_pos, idx_page in page_index:
+        if idx_pos > pos:
+            break
+        page = idx_page
+        page_start = idx_pos
+    # Count newlines from page start to pos for approximate line number
+    line = text[page_start:pos].count('\n') + 1
+    return page, line
+
+
+def _has_chinese(s: str) -> bool:
+    """Return True if the string contains at least one Chinese character."""
+    return bool(re.search(r'[\u4e00-\u9fff]', s))
 
 
 def _keyword_scan(text: str, library: dict) -> list[dict]:
     """Fast keyword matching against the sensitive word library."""
+    page_index = _build_page_index(text)
     hits: list[dict] = []
     for cat_key, cat in library.get("categories", {}).items():
         level = cat.get("level", "L3")
         strategy = cat.get("strategy", "warning")
-        is_punctuation = cat_key == "punctuation_errors"
         for entry in cat.get("words", []):
             word = entry["word"]
             idx = 0
@@ -54,6 +68,14 @@ def _keyword_scan(text: str, library: dict) -> list[dict]:
                     continue
                 context_start = max(0, pos - 30)
                 context_end = min(len(text), pos + len(word) + 30)
+
+                # Skip hits where the word itself has no Chinese characters
+                # (symbols/ASCII patterns from PDF encoding artifacts)
+                if not _has_chinese(word):
+                    idx = pos + len(word)
+                    continue
+
+                page, line = _pos_to_page_line(text, pos, page_index)
                 hits.append({
                     "word": word,
                     "category": cat_key,
@@ -64,6 +86,7 @@ def _keyword_scan(text: str, library: dict) -> list[dict]:
                     "note": entry.get("note", ""),
                     "context": f"…{text[context_start:context_end]}…",
                     "position": pos,
+                    "location": f"第{page}页 第{line}行" if page else "",
                 })
                 idx = pos + len(word)
     return hits
@@ -111,6 +134,7 @@ class SensitiveAgent(BaseAgent):
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\
 你是一位中国出版行业内容合规审核专家。请从以下维度审查文档内容，找出可能存在的敏感内容。
+注意：文档中带有【第X页】标记，表示该内容所在的PDF页码。请在 location 字段中引用具体页码（如"第12页"）。
 
 ## 审查维度
 1. **政治敏感** — 涉及国家主权、领土完整、政治人物的不当表述
@@ -138,7 +162,7 @@ class SensitiveAgent(BaseAgent):
       "strategy": "block|manual_review|warning",
       "context": "包含敏感内容的上下文句子",
       "explanation": "为何判定为敏感",
-      "location": "位置描述"
+      "location": "第X页（引用【第X页】标记中的页码）"
     }}
   ],
   "risk_score": 0.35,

@@ -90,7 +90,7 @@ def extract_json(text: str) -> dict:
     if first != -1 and last > first:
         candidates.append(text[first : last + 1])
 
-    # Try each candidate: raw first, then repaired
+    # Try each candidate: raw first, then several repair strategies
     for raw_candidate in candidates:
         # Attempt 1: parse as-is
         try:
@@ -98,12 +98,47 @@ def extract_json(text: str) -> dict:
         except json.JSONDecodeError:
             pass
 
-        # Attempt 2: repair Chinese inner quotes, then parse
+        # Attempt 2: repair Chinese inner quotes
         repaired = _repair_chinese_quotes(raw_candidate)
         try:
             return json.loads(repaired)
         except json.JSONDecodeError:
             pass
+
+        # Attempt 3: replace unescaped " inside JSON string values with 「」
+        # Pattern: "..."X"..."  where X is CJK — the inner quotes break JSON
+        escaped = re.sub(
+            r'(?<=[^\\\n])"([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef][^"]{0,80}?)"(?=[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef,，。\]])',
+            r'「\1」',
+            raw_candidate,
+        )
+        try:
+            return json.loads(escaped)
+        except json.JSONDecodeError:
+            pass
+
+        # Attempt 4: strip trailing commas before } or ] (common LLM mistake)
+        cleaned = re.sub(r',\s*([}\]])', r'\1', raw_candidate)
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            pass
+
+        # Attempt 5: combined repairs
+        combined = re.sub(r',\s*([}\]])', r'\1', repaired)
+        try:
+            return json.loads(combined)
+        except json.JSONDecodeError:
+            pass
+
+    # Attempt 6: json-repair library (handles unescaped inner quotes etc.)
+    try:
+        import json_repair
+        result = json_repair.repair_json(text, return_objects=True)
+        if isinstance(result, dict) and not result.get("_parse_error"):
+            return result
+    except Exception:
+        pass
 
     # Fallback
     return {"_raw": text, "_parse_error": True}

@@ -10,6 +10,7 @@ class LanguageAgent(BaseAgent):
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\
 你是一位资深中文出版编辑，拥有 20 年三审三校经验。请逐段审核以下文档的语言质量。
+注意：文档中带有【第X页】标记，表示该内容所在的PDF页码。请在 location 字段中引用具体页码（如"第15页"），以便编辑快速定位。
 
 ## 审核维度（按优先级）
 1. **错别字** — 如"以经"应为"已经"、"做为"应为"作为"
@@ -35,7 +36,7 @@ class LanguageAgent(BaseAgent):
       "severity": "high|medium|low",
       "original": "原文片段",
       "suggested": "建议修改为",
-      "location": "大致位置描述（如：第X段、开头部分等）",
+      "location": "第X页（引用【第X页】标记中的页码）",
       "explanation": "简要说明为何需要修改"
     }}
   ],

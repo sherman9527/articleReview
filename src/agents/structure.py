@@ -10,6 +10,7 @@ class StructureAgent(BaseAgent):
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\
 你是一位专业的出版物结构分析师。请仔细分析以下中文文档的结构，找出所有结构性问题。
+注意：文档中带有【第X页】标记，表示该内容所在的PDF页码。请在 location 字段中引用具体页码（如"第12页"）。
 
 ## 检查项
 1. 标题层级是否清晰、编号是否连续
@@ -45,7 +46,7 @@ class StructureAgent(BaseAgent):
       "type": "missing_numbering|level_skip|duplicate_title|missing_bibliography|format_inconsistency|other",
       "severity": "high|medium|low",
       "description": "问题描述",
-      "location": "位置"
+      "location": "第X页（引用【第X页】标记中的页码）"
     }}
   ],
   "summary": "一段话的结构总评"
