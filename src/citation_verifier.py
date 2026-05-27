@@ -188,19 +188,31 @@ def search_scholar(title: str, author: str = "", timeout: int = 30) -> list[dict
 # Library Genesis search & download (libgen-api-enhanced)
 # ---------------------------------------------------------------------------
 
-def search_libgen(title: str, author: str = "") -> list[dict]:
-    """Search Library Genesis for a book."""
+def search_libgen(title: str, author: str = "", timeout: int = 20) -> list[dict]:
+    """Search Library Genesis for a book (with timeout to avoid hanging)."""
     try:
         from libgen_api_enhanced import LibgenSearch
     except ImportError:
         return []
 
-    results = []
-    try:
+    import concurrent.futures
+
+    def _do_search():
         s = LibgenSearch()
         raw = s.search_title(title)
         if not raw and author:
             raw = s.search_author(author)
+        return raw
+
+    results = []
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as ex:
+            future = ex.submit(_do_search)
+            try:
+                raw = future.result(timeout=timeout)
+            except concurrent.futures.TimeoutError:
+                print(f"        LibGen 搜索超时（{timeout}s），跳过", flush=True)
+                return []
         for item in (raw or [])[:5]:
             results.append({
                 "title": item.get("Title", ""),
