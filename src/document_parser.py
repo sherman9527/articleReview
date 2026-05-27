@@ -50,6 +50,39 @@ def _parse_docx(path: Path) -> ParsedDocument:
     return parsed
 
 
+def _extract_page_text(page) -> str:
+    """Extract text from a PDF page, skipping spans from broken encoding fonts.
+
+    Some Chinese PDFs (e.g. produced by FangZheng BookMaker) embed custom
+    subset fonts (FzBookMaker*DlFont*) that lack ToUnicode maps, causing
+    PyMuPDF to output ASCII garbage (!&#*%',-) instead of digits and
+    punctuation. The actual Chinese content is in correctly-mapped fonts
+    (FZSSK-*, FZDBSK-*, SimSun, etc.). We extract at span level, drop spans
+    from the broken fonts, and join the rest.
+    """
+    try:
+        blocks = page.get_text("dict", flags=0)["blocks"]
+    except Exception:
+        return page.get_text()  # fallback to plain extraction
+
+    lines_out: list[str] = []
+    for block in blocks:
+        for line in block.get("lines", []):
+            parts: list[str] = []
+            for span in line.get("spans", []):
+                font = span.get("font", "")
+                text = span.get("text", "")
+                # Skip spans from FangZheng BookMaker private encoding fonts
+                if "FzBookMaker" in font and "DlFont" in font:
+                    continue
+                if text.strip():
+                    parts.append(text)
+            if parts:
+                lines_out.append("".join(parts))
+
+    return "\n".join(lines_out)
+
+
 def _parse_pdf(path: Path) -> ParsedDocument:
     try:
         import fitz  # PyMuPDF
@@ -71,7 +104,7 @@ def _parse_pdf(path: Path) -> ParsedDocument:
             continue
         if i >= start_page + max_pages:
             break
-        page_text = page.get_text()
+        page_text = _extract_page_text(page)
         if page_text.strip():
             cleaned = _clean_pdf_page(page_text)
             if cleaned.strip():
