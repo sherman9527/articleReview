@@ -886,8 +886,8 @@ def _section_action_list(results: dict) -> str:
             f'<tr class="{row_cls}">'
             f'<td class="col-num">{i}</td>'
             f'<td class="col-page"><strong>{loc}</strong></td>'
-            f'<td><span class="cat-tag cat-{_cat_key(item["category"])}">{esc(item["category"])}</span></td>'
-            f'<td>{esc(item["type"])}</td>'
+            f'<td><span class="cat-tag cat-{_cat_key(item["category"])}">{esc(tr(item["category"]))}</span></td>'
+            f'<td>{esc(tr(item["type"]))}</td>'
             f'<td>{sev_badge}</td>'
             f'<td class="col-original"><span class="original-inline">{original}</span></td>'
             f'<td class="col-suggested"><span class="suggested-inline">{suggested}</span></td>'
@@ -954,8 +954,13 @@ _TR: dict[str, str] = {
 }
 
 def tr(val) -> str:
-    """Translate English enum values to Chinese for display."""
-    return _TR.get(str(val).strip(), str(val))
+    """Translate English enum values to Chinese for display.
+    Handles pipe-separated multi-values like 'missing_author|nonstandard_format'.
+    """
+    s = str(val).strip()
+    if '|' in s:
+        return ' / '.join(_TR.get(part.strip(), part.strip()) for part in s.split('|'))
+    return _TR.get(s, s)
 
 
 def esc(s: str) -> str:
