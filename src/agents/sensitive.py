@@ -62,10 +62,6 @@ def _keyword_scan(text: str, library: dict) -> list[dict]:
                 pos = text.find(word, idx)
                 if pos == -1:
                     break
-                # Skip English punctuation inside English text / references
-                if is_punctuation and _is_english_context(text, pos, word):
-                    idx = pos + len(word)
-                    continue
                 context_start = max(0, pos - 30)
                 context_end = min(len(text), pos + len(word) + 30)
 
@@ -133,17 +129,52 @@ class SensitiveAgent(BaseAgent):
 
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\
-你是一位中国出版行业内容合规审核专家。请从以下维度审查文档内容，找出可能存在的敏感内容。
+你是一位中国出版行业内容合规审核专家，熟悉《编辑必备语词规范手册》《图书编校质量差错案例》等权威文献。
+请从以下维度精读文档，找出所有可能存在的敏感内容，发现所有问题不设上限。
 注意：文档中带有【第X页】标记，表示该内容所在的PDF页码。请在 location 字段中引用具体页码（如"第12页"）。
 
-## 审查维度
-1. **政治敏感** — 涉及国家主权、领土完整、政治人物的不当表述
-2. **民族宗教** — 可能引起民族或宗教争议的内容
-3. **历史事件** — 对历史事件的不当定性或敏感表述
-4. **法律风险** — 可能构成诽谤、侵权、泄密的内容
-5. **意识形态** — 与社会主义核心价值观相悖的内容
-6. **不当用语** — 歧视性、侮辱性用语
-7. **数据敏感** — 未经授权引用的内部数据或个人信息
+## 审查维度与重点检查项
+
+### 1. 政治敏感（political）
+- 国家主权、领土完整相关不当表述
+- 党和国家领导人不当描述
+- 含"满清"（应为清朝/清代）、"八年抗战"（应为十四年抗战）等被纠正的历史表述
+- 使用"台湾国""藏独""东突"等分裂性词汇
+- 将香港、澳门称为"殖民地"（应用"英占时期""葡占时期"）
+
+### 2. 民族宗教（ethnic_religion）
+- 歧视少数民族的用语：如"回回""鞑子""蒙古大夫""番人""蛮夷"等
+- 煽动民族矛盾的内容
+- 宣扬宗教极端主义的内容
+- 不尊重少数民族风俗习惯的表述
+
+### 3. 历史事件（history）
+- 为侵华历史翻案
+- 否定南京大屠杀等重大历史事件
+- 对抗战历史的不当定性
+- 历史虚无主义表述
+
+### 4. 法律风险（legal）
+- 可能构成诽谤的表述（对他人不实指控）
+- 侵犯个人隐私（揭露他人私生活）
+- 泄露国家秘密或商业秘密
+- 引用未经授权的内部资料
+
+### 5. 意识形态（ideology）
+- 宣扬封建迷信
+- 与社会主义核心价值观相悖的表述
+- 历史虚无主义内容
+- 负能量、散布恐慌的内容
+
+### 6. 不当用语（offensive）
+- 歧视性称谓（民族、性别、职业等歧视）
+- 侮辱性语言
+- 使用已被明令禁止的词汇（如"满清""蒙古大夫"等）
+
+### 7. 数据隐私（data_privacy）
+- 未经授权引用的个人信息
+- 未脱敏的个人数据
+- 涉密数据或内部数据
 
 ## 文档内容
 \"\"\"
@@ -151,7 +182,7 @@ class SensitiveAgent(BaseAgent):
 \"\"\"
 
 ## 输出要求
-请以 JSON 格式返回，不要添加任何额外说明：
+请以 JSON 格式返回，不要添加任何额外说明。发现所有问题，不限数量：
 ```json
 {{
   "semantic_hits": [
@@ -161,12 +192,12 @@ class SensitiveAgent(BaseAgent):
       "level": "L1|L2|L3",
       "strategy": "block|manual_review|warning",
       "context": "包含敏感内容的上下文句子",
-      "explanation": "为何判定为敏感",
-      "location": "第X页（引用【第X页】标记中的页码）"
+      "explanation": "为何判定为敏感，违反哪项规定",
+      "location": "第X页"
     }}
   ],
   "risk_score": 0.35,
-  "summary": "敏感内容审查总评（一段话）"
+  "summary": "敏感内容审查总评（包括主要发现、风险等级评估）"
 }}
 ```
 如果没有发现任何敏感内容，semantic_hits 返回空数组，risk_score 返回 0。"""

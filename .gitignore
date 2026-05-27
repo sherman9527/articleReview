@@ -17,3 +17,18 @@ Thumbs.db
 book/
 fix_structure.py
 checkpoint.json
+# AI智能体提取的临时文件
+extracted_*.txt
+extraction_pages_*.txt
+comprehensive_knowledge_base.json
+detailed_knowledge_base.json
+knowledge_base_structured.json
+/knowledge_base.json
+make_detailed_kb.py
+preliminary_analysis.txt
+extracted_handbook.txt
+handbook_summary.txt
+# 知识库原始书籍（文件太大）
+knowledge/*.pdf
+knowledge/*.epub
+knowledge/epub_text_content.txt
