@@ -339,7 +339,7 @@ def _section_structure(sr: dict) -> str:
                 f'<td class="col-num">{i}</td>'
                 f'<td class="col-loc"><strong>{loc}</strong></td>'
                 f'<td>{sev_badge}</td>'
-                f'<td>{esc(str(iss.get("type", "")))}</td>'
+                f'<td>{esc(tr(iss.get("type", "")))}</td>'
                 f'<td>{esc(str(iss.get("description", "")))}</td>'
                 f'</tr>'
             )
@@ -392,8 +392,8 @@ def _section_sensitive(sw: dict) -> str:
             loc = esc(h.get("location", "—"))
             word = esc(h.get("word", ""))
             category = esc(h.get("category", ""))
-            strategy = esc(h.get("strategy", ""))
-            match_type = esc(h.get("match_type", ""))
+            strategy = esc(tr(h.get("strategy", "")))
+            match_type = esc(tr(h.get("match_type", "")))
             context = esc(h.get("context", ""))
             replacement = esc(h.get("replacement", ""))
             note = esc(h.get("note", ""))
@@ -468,7 +468,7 @@ def _section_language(lr: dict) -> str:
             sev_badge_cls = "badge-must" if sev in ("high", "critical") else \
                             "badge-suggest" if sev == "medium" else "badge-note"
             loc = esc(str(iss.get("location", "—")))
-            issue_type = esc(str(iss.get("type", "")))
+            issue_type = esc(tr(iss.get("type", "")))
             original = esc(str(iss.get("original", "")))
             suggested = esc(str(iss.get("suggested", "")))
             explanation = esc(str(iss.get("explanation", "")))
@@ -539,8 +539,8 @@ def _section_citation(cr: dict) -> str:
         for c in citations:
             parts.append(f'<tr><td class="col-num">{esc(str(c.get("index", "")))}</td>'
                          f'<td>{esc(str(c.get("raw_text", "")))}</td>'
-                         f'<td>{esc(str(c.get("format", "")))}</td>'
-                         f'<td>{esc(str(c.get("completeness", "")))}</td></tr>')
+                         f'<td>{esc(tr(c.get("format", "")))}</td>'
+                         f'<td>{esc(tr(c.get("completeness", "")))}</td></tr>')
         parts.append('</tbody></table></details>')
 
     issues = cr.get("issues", [])
@@ -559,7 +559,7 @@ def _section_citation(cr: dict) -> str:
                 f'<td class="col-num">{i}</td>'
                 f'<td class="col-loc"><strong>{loc}</strong></td>'
                 f'<td>{_sev_badge(sev)}</td>'
-                f'<td>{esc(str(iss.get("type", "")))}</td>'
+                f'<td>{esc(tr(iss.get("type", "")))}</td>'
                 f'<td>{esc(str(iss.get("description", "")))}</td>'
                 f'</tr>'
             )
@@ -709,7 +709,7 @@ def _section_policy(pr: dict) -> str:
             sev_badge_cls = "badge-must" if sev in ("high", "critical") else \
                             "badge-suggest" if sev == "medium" else "badge-note"
             loc = esc(str(v.get("location", "—")))
-            vtype = esc(str(v.get("type", "")))
+            vtype = esc(tr(v.get("type", "")))
             desc = esc(str(v.get("description", "")))
             content = esc(str(v.get("content", "")))
             rule_basis = esc(str(v.get("rule_basis", "")))
@@ -898,6 +898,61 @@ def _section_action_list(results: dict) -> str:
 # ---------------------------------------------------------------------------
 # Helper utilities
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Translation table: English field values → Chinese display labels
+# ---------------------------------------------------------------------------
+_TR: dict[str, str] = {
+    # Severity
+    "critical": "严重", "high": "高", "medium": "中", "low": "低",
+    # Structure types
+    "missing_numbering": "编号缺失", "level_skip": "层级跳跃",
+    "duplicate_title": "标题重复", "missing_bibliography": "缺少参考文献",
+    "missing_toc": "缺少目录", "format_inconsistency": "格式不一致",
+    "figure_caption": "图表标题缺失", "numbering_error": "编号错误",
+    "other": "其他",
+    # Language types
+    "typo": "错别字", "grammar": "语法错误", "idiom_misuse": "成语误用",
+    "number_format": "数字格式", "terminology": "术语不一致",
+    "redundancy": "表达冗余", "punctuation": "标点规范",
+    "style": "文风问题", "logic": "逻辑衔接",
+    # Citation issue types
+    "missing_author": "缺少作者", "missing_title": "缺少题名",
+    "missing_year": "缺少年份", "missing_publisher": "缺少出版社",
+    "missing_pages": "缺少页码", "missing_doi": "缺少DOI",
+    "nonstandard_format": "非标准格式", "duplicate": "重复引文",
+    # Citation completeness & format
+    "complete": "完整", "incomplete": "不完整", "problematic": "有问题",
+    "GB_T_7714": "GB/T 7714", "mixed": "格式混用",
+    "unknown": "未知格式", "none": "未检测到",
+    # Citation type
+    "bibliography": "参考文献", "footnote": "脚注", "inline": "行内引用",
+    # Policy violation types
+    "ideology": "意识形态", "sovereignty": "领土主权",
+    "ethnic_religion": "民族宗教", "history": "历史表述",
+    "legal": "法律合规", "academic_integrity": "学术诚信",
+    "policy": "出版政策", "public_opinion": "舆情风险",
+    # Sensitive categories
+    "political": "政治敏感", "offensive": "不当用语",
+    "data_privacy": "数据隐私",
+    # Verification status
+    "verified": "已验证", "partial": "部分验证", "failed": "未通过",
+    "unverifiable": "暂无法核验", "skipped": "跳过", "pending": "待验证",
+    # Strategy & match
+    "block": "禁止使用", "manual_review": "人工复核", "warning": "注意",
+    "exact": "精确匹配", "semantic": "语义分析",
+    # Publish recommendation
+    "approve": "建议出版", "conditional_approve": "有条件出版",
+    "reject": "不建议出版",
+    # Document types
+    "academic_book": "学术专著", "textbook": "教材",
+    "monograph": "专著", "essay_collection": "论文集",
+}
+
+def tr(val) -> str:
+    """Translate English enum values to Chinese for display."""
+    return _TR.get(str(val).strip(), str(val))
+
 
 def esc(s: str) -> str:
     import re as _re
