@@ -21,7 +21,7 @@ def call_claude(prompt: str, timeout: int | None = None) -> str:
     timeout = timeout or config.LLM_TIMEOUT
     try:
         result = subprocess.run(
-            [config.CLAUDE_CMD, "-p"],
+            [config.CLAUDE_CMD, "-p", "--model", "claude-sonnet-4-6", "--effort", "medium"],
             input=prompt,
             capture_output=True,
             text=True,

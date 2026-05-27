@@ -6,6 +6,7 @@ from .base import BaseAgent
 class StructureAgent(BaseAgent):
     name = "structure"
     description = "文档结构分析"
+    timeout = 900
 
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\

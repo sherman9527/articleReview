@@ -35,13 +35,17 @@ BANNER = """
 
 
 def main():
-    if len(sys.argv) < 2:
+    args = sys.argv[1:]
+    no_email = "--no-email" in args
+    args = [a for a in args if not a.startswith("--")]
+
+    if not args:
         print(BANNER)
-        print(f"用法: python review.py <稿件路径>")
+        print(f"用法: python review.py <稿件路径> [--no-email]")
         print(f"支持格式: {', '.join(SUPPORTED_FORMATS)}")
         sys.exit(0)
 
-    file_path = Path(sys.argv[1])
+    file_path = Path(args[0])
     print(BANNER)
 
     # ---- Parse ----
@@ -62,7 +66,9 @@ def main():
     # Prepare output directory
     from src import config
     base_name = file_path.stem
-    manuscript_dir = config.OUTPUT_DIR / base_name
+    max_pages = getattr(config, 'MAX_PAGES', 50)
+    page_range = f"第1-{max_pages}页"
+    manuscript_dir = config.OUTPUT_DIR / f"{base_name}-{page_range}"
     refs_dir = manuscript_dir / "references"
     refs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -74,7 +80,7 @@ def main():
 
     # ---- Generate report ----
     print(f"\n正在生成审核报告 ...", flush=True)
-    report_path = generate_report(results, source_file=file_path.name)
+    report_path = generate_report(results, source_file=file_path.name, page_range=page_range)
     report_dir = report_path.parent
 
     # List downloaded references
@@ -92,20 +98,20 @@ def main():
     print(f"{'='*50}")
 
     # ---- Send email ----
-    print(f"\n正在发送审核报告邮件 ...", flush=True)
-    from src import config as _cfg
-    max_pages = getattr(_cfg, 'MAX_PAGES', 0)
-    page_range = f"（第1-{max_pages}页）" if max_pages else ""
-    email_result = send_review_email(
-        book_name=f"{base_name}{page_range}",
-        html_report_path=report_path,
-        refs_dir=refs_dir,
-    )
-    if email_result["success"]:
-        print(f"📧 邮件发送成功 | {email_result['subject']} | {email_result['recipients']} 位收件人"
-              f"{' | 含附件' if email_result.get('has_attachment') else ''}")
+    if no_email:
+        print(f"\n已跳过邮件发送（--no-email）", flush=True)
     else:
-        print(f"📧 邮件发送失败: {email_result['error']}", file=sys.stderr)
+        print(f"\n正在发送审核报告邮件 ...", flush=True)
+        email_result = send_review_email(
+            book_name=f"{base_name}（{page_range}）",
+            html_report_path=report_path,
+            refs_dir=refs_dir,
+        )
+        if email_result["success"]:
+            print(f"邮件发送成功 | {email_result['subject']} | {email_result['recipients']} 位收件人"
+                  f"{' | 含附件' if email_result.get('has_attachment') else ''}")
+        else:
+            print(f"邮件发送失败: {email_result['error']}", file=sys.stderr)
 
 
 if __name__ == "__main__":

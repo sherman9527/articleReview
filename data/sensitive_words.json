@@ -7,7 +7,7 @@
       "level": "L1",
       "strategy": "block",
       "words": [
-        {"word": "满清", "replacement": "清朝", "note": "国务院明令禁止使用，应改为"清朝"或"清代""},
+        {"word": "满清", "replacement": "清朝", "note": "国务院明令禁止使用，应改为清朝或清代"},
         {"word": "蒙古大夫", "replacement": null, "note": "歧视少数民族用语，严禁使用"},
         {"word": "支那", "replacement": "中国", "note": "歧视性历史词汇，严禁使用"},
         {"word": "满洲国", "replacement": null, "note": "伪政权称谓，不得使用"},
@@ -25,18 +25,17 @@
       "level": "L1",
       "strategy": "manual_review",
       "words": [
-        {"word": "八年抗战", "replacement": "十四年抗战", "note": "2017年教育部明确：抗战起始于1931年，应使用"十四年抗战""},
+        {"word": "八年抗战", "replacement": "十四年抗战", "note": "2017年教育部明确：抗战起始于1931年，应使用十四年抗战"},
         {"word": "台湾省政府", "replacement": null, "note": "台湾省政府已于1998年精简，表述需准确"},
         {"word": "中华民国政府", "replacement": null, "note": "涉台敏感，需审慎"},
-        {"word": "中共", "replacement": "中国共产党", "note": "书面出版物应使用全称或"党""},
-        {"word": "北京政府", "replacement": null, "note": "若指当前中央政府，应用"中央政府"或"中国政府""},
-        {"word": "蒋介石政府", "replacement": null, "note": "历史表述，需注意是否带有立场倾向"},
-        {"word": "国共内战", "replacement": "解放战争", "note": "大陆出版物一般使用"解放战争""},
+        {"word": "中共", "replacement": "中国共产党", "note": "书面出版物应使用全称或党"},
+        {"word": "北京政府", "replacement": null, "note": "若指当前中央政府，应用中央政府或中国政府"},
+        {"word": "国共内战", "replacement": "解放战争", "note": "大陆出版物一般使用解放战争"},
         {"word": "汉城", "replacement": "首尔", "note": "2005年韩国正式将汉城改名为首尔"},
-        {"word": "锡金", "replacement": "锡金（今印度锡金邦）", "note": "锡金已于1975年被印度并吞，需注明"},
         {"word": "达赖喇嘛", "replacement": null, "note": "涉藏敏感人物，需审慎引用"},
-        {"word": "热依拉·卡德尔", "replacement": null, "note": "涉疆敏感人物"},
-        {"word": "反人类罪", "replacement": null, "note": "若指向中国政府，需高度审慎"}
+        {"word": "南巡讲话", "replacement": "南方谈话", "note": "邓小平1992年南巡的讲话正式名称是南方谈话"},
+        {"word": "反人类罪", "replacement": null, "note": "若指向中国政府，需高度审慎"},
+        {"word": "公正法制", "replacement": "公正法治", "note": "社会主义核心价值观中是法治不是法制"}
       ]
     },
     "territorial_sovereignty": {
@@ -44,14 +43,23 @@
       "level": "L1",
       "strategy": "manual_review",
       "words": [
-        {"word": "日本海", "replacement": null, "note": "东海、黄海部分区域，中国立场与日本不同，注意表述"},
-        {"word": "南沙群岛为越南所有", "replacement": null, "note": "违反中国领土主张"},
         {"word": "西藏独立", "replacement": null, "note": "违反国家统一原则"},
         {"word": "新疆独立", "replacement": null, "note": "违反国家统一原则"},
         {"word": "香港独立", "replacement": null, "note": "违反国家统一原则"},
-        {"word": "澳门回归前的葡萄牙殖民地", "replacement": null, "note": "澳门是中国领土，葡管时期不宜称"殖民地"（官方使用"葡占时期"）"},
         {"word": "香港殖民地时期", "replacement": "香港英占时期", "note": "官方表述为英占时期而非殖民地"},
-        {"word": "钓鱼台", "replacement": "钓鱼岛", "note": "中国大陆标准名称为"钓鱼岛""}
+        {"word": "澳门殖民地", "replacement": "葡占时期", "note": "官方表述为葡占时期"},
+        {"word": "钓鱼台", "replacement": "钓鱼岛", "note": "中国大陆标准名称为钓鱼岛，不用台湾的叫法"},
+        {"word": "斯普拉特利群岛", "replacement": "南沙群岛", "note": "中国大陆标准名称为南沙群岛"},
+        {"word": "埃佛勒斯峰", "replacement": "珠穆朗玛峰", "note": "殖民时期西方命名，应使用中国标准名称"},
+        {"word": "额菲尔士峰", "replacement": "珠穆朗玛峰", "note": "殖民时期西方命名"},
+        {"word": "阿鲁纳恰尔邦", "replacement": "我国藏南地区", "note": "中国不承认印度设立此邦的合法性"},
+        {"word": "东土耳其斯坦", "replacement": "我国新疆", "note": "非法称谓，中国政府不予承认"},
+        {"word": "西海海域", "replacement": "黄海海域", "note": "朝韩称西海，国际通用黄海"},
+        {"word": "南朝鲜", "replacement": "韩国", "note": "韩国正式国名为大韩民国，简称韩国"},
+        {"word": "蒙古人民共和国", "replacement": "蒙古国", "note": "1992年已改国名为蒙古国"},
+        {"word": "台湾法律", "replacement": "台湾地区有关规定", "note": "应称台湾地区有关规定，不称台湾法律"},
+        {"word": "福摩萨", "replacement": "台湾", "note": "殖民时期西方称谓"},
+        {"word": "福尔摩萨", "replacement": "台湾", "note": "殖民时期西方称谓"}
       ]
     },
     "ethnic_religion_sensitive": {
@@ -59,64 +67,55 @@
       "level": "L1",
       "strategy": "manual_review",
       "words": [
-        {"word": "回回", "replacement": "回族", "note": "贬称，应用"回族""},
+        {"word": "回回", "replacement": "回族", "note": "贬称，应用回族"},
         {"word": "鞑子", "replacement": null, "note": "歧视蒙古族的贬称"},
         {"word": "番人", "replacement": null, "note": "歧视少数民族的贬称"},
-        {"word": "番邦", "replacement": null, "note": "带有歧视色彩，慎用"},
         {"word": "蛮夷", "replacement": null, "note": "歧视性历史词汇，学术引用需注明语境"},
         {"word": "洋人", "replacement": "外国人", "note": "带有歧视色彩，出版物中应避免"},
         {"word": "老外", "replacement": "外国友人", "note": "口语化，正式出版物应避免"},
         {"word": "鬼子", "replacement": null, "note": "历史语境中可用，现代表述中应避免"},
         {"word": "喇嘛教", "replacement": "藏传佛教", "note": "藏传佛教的规范称谓"},
-        {"word": "基督教义", "replacement": null, "note": "涉及宗教内容，需审核是否适合出版"},
-        {"word": "伊斯兰原教旨主义", "replacement": null, "note": "涉及宗教极端主义，需审慎"}
+        {"word": "伊斯兰恐怖主义", "replacement": "恐怖主义", "note": "不能将恐怖主义与特定民族宗教挂钩"},
+        {"word": "摩梭族", "replacement": "摩梭人", "note": "摩梭人是纳西族的一支，不是独立民族"}
       ]
     },
     "common_typos": {
-      "description": "常见错别字（依据《第一批异形词整理表》《图书编校质量差错案例》）",
+      "description": "常见错别字（依据第一批异形词整理表及图书编校质量差错案例）",
       "level": "L3",
       "strategy": "warning",
       "words": [
-        {"word": "按纳", "replacement": "按捺", "note": "异形词，"按捺"为规范形式"},
-        {"word": "坐阵", "replacement": "坐镇", "note": ""镇"为规范用字"},
-        {"word": "部署", "replacement": null, "note": "注意区分"部署"（安排）和"布署"（已废除）"},
-        {"word": "布署", "replacement": "部署", "note": ""部署"为规范形式，"布署"已废除"},
-        {"word": "毕竟", "replacement": null, "note": "检查是否误用为"必竟""},
-        {"word": "必竟", "replacement": "毕竟", "note": ""毕竟"为规范形式"},
-        {"word": "必恭必敬", "replacement": "毕恭毕敬", "note": "异形词，"毕恭毕敬"为规范形式"},
-        {"word": "斑白", "replacement": null, "note": ""斑白"为规范形式（"班白""颁白"为异形词）"},
-        {"word": "班白", "replacement": "斑白", "note": "异形词，"斑白"为规范形式"},
-        {"word": "颁白", "replacement": "斑白", "note": "异形词，"斑白"为规范形式"},
-        {"word": "帐号", "replacement": "账号", "note": ""账"指钱财账目，"帐"指帷幕"},
-        {"word": "帐户", "replacement": "账户", "note": ""账"指钱财账目"},
-        {"word": "帐目", "replacement": "账目", "note": ""账"指钱财账目"},
-        {"word": "其它", "replacement": "其他", "note": ""其他"为规范形式，"其它"已废除"},
-        {"word": "份量", "replacement": "分量", "note": "异形词，"分量"为规范形式"},
-        {"word": "做为", "replacement": "作为", "note": ""作为"为规范形式"},
+        {"word": "按纳", "replacement": "按捺", "note": "异形词，按捺为规范形式"},
+        {"word": "坐阵", "replacement": "坐镇", "note": "镇为规范用字"},
+        {"word": "布署", "replacement": "部署", "note": "部署为规范形式，布署已废除"},
+        {"word": "必竟", "replacement": "毕竟", "note": "毕竟为规范形式"},
+        {"word": "必恭必敬", "replacement": "毕恭毕敬", "note": "异形词，毕恭毕敬为规范形式"},
+        {"word": "班白", "replacement": "斑白", "note": "异形词，斑白为规范形式"},
+        {"word": "颁白", "replacement": "斑白", "note": "异形词，斑白为规范形式"},
+        {"word": "帐号", "replacement": "账号", "note": "账指钱财账目，帐指帷幕"},
+        {"word": "帐户", "replacement": "账户", "note": "账指钱财账目"},
+        {"word": "帐目", "replacement": "账目", "note": "账指钱财账目"},
+        {"word": "其它", "replacement": "其他", "note": "其他为规范形式，其它已废除"},
+        {"word": "份量", "replacement": "分量", "note": "异形词，分量为规范形式"},
+        {"word": "做为", "replacement": "作为", "note": "作为为规范形式"},
         {"word": "以经", "replacement": "已经", "note": "同音错别字"},
-        {"word": "侯选", "replacement": "候选", "note": ""候"指等待，"侯"指爵位"},
-        {"word": "恼怒", "replacement": null, "note": "检查是否误用为"恼努""},
-        {"word": "恼努", "replacement": "恼怒", "note": "同音错别字"},
-        {"word": "沈思", "replacement": "沉思", "note": ""沈"仅用于人名、地名（如沈阳）"},
-        {"word": "掺和", "replacement": null, "note": "区分"掺和"（混合）和"搀和"（掺扶），注意语义"},
-        {"word": "滥竽充数", "replacement": null, "note": "注意是否误写为"烂竽充数""},
-        {"word": "烂竽充数", "replacement": "滥竽充数", "note": "错别字"},
-        {"word": "再接再励", "replacement": "再接再厉", "note": "常见错别字，"厉"非"励""},
-        {"word": "挖墙角", "replacement": "挖墙脚", "note": ""脚"为规范用字"},
-        {"word": "装祯", "replacement": "装帧", "note": ""帧"为规范用字"},
-        {"word": "愿意", "replacement": null, "note": "检查是否误用为"原意""},
-        {"word": "原意", "replacement": null, "note": "区分"原意"（原来的意思）和"愿意"（乐意）"},
-        {"word": "义不容辞", "replacement": null, "note": "检查是否误写为"义不容词""},
-        {"word": "义不容词", "replacement": "义不容辞", "note": "错别字"},
-        {"word": "一诺千斤", "replacement": "一诺千金", "note": "常见错别字"},
-        {"word": "草管人命", "replacement": "草菅人命", "note": ""菅"为茅草，非"管""},
-        {"word": "貌和神离", "replacement": "貌合神离", "note": "常见错别字，"合"非"和""},
-        {"word": "蛰伏", "replacement": null, "note": "注意是否误写为"蜇伏""},
-        {"word": "蜇伏", "replacement": "蛰伏", "note": ""蛰"为规范用字（冬眠义），"蜇"指蜂蜇"},
-        {"word": "精萃", "replacement": "精粹", "note": ""粹"为规范用字"},
-        {"word": "神彩", "replacement": "神采", "note": ""采"为规范用字"},
-        {"word": "渲泄", "replacement": "宣泄", "note": ""宣"为规范用字"},
-        {"word": "宣泻", "replacement": "宣泄", "note": ""泄"为规范用字"}
+        {"word": "侯选", "replacement": "候选", "note": "候指等待，侯指爵位"},
+        {"word": "沈思", "replacement": "沉思", "note": "沈仅用于人名、地名（如沈阳）"},
+        {"word": "烂竽充数", "replacement": "滥竽充数", "note": "滥竽充数为规范形式"},
+        {"word": "再接再励", "replacement": "再接再厉", "note": "厉为规范形式，非励"},
+        {"word": "挖墙角", "replacement": "挖墙脚", "note": "挖墙脚为规范形式"},
+        {"word": "装祯", "replacement": "装帧", "note": "帧为规范用字"},
+        {"word": "草管人命", "replacement": "草菅人命", "note": "菅为茅草名，非管"},
+        {"word": "貌和神离", "replacement": "貌合神离", "note": "合为规范形式"},
+        {"word": "蜇伏", "replacement": "蛰伏", "note": "蛰伏冬眠义，蜇指蜂蜇"},
+        {"word": "精萃", "replacement": "精粹", "note": "粹为规范用字"},
+        {"word": "神彩", "replacement": "神采", "note": "采为规范用字"},
+        {"word": "渲泄", "replacement": "宣泄", "note": "宣泄为规范形式"},
+        {"word": "宣泻", "replacement": "宣泄", "note": "泄为规范用字"},
+        {"word": "义不容词", "replacement": "义不容辞", "note": "辞为规范用字"},
+        {"word": "一诺千斤", "replacement": "一诺千金", "note": "金为规范用字"},
+        {"word": "前赴后继", "replacement": "前仆后继", "note": "仆=向前倒，非赴"},
+        {"word": "勇跃", "replacement": "踊跃", "note": "踊跃为规范形式"},
+        {"word": "坐右铭", "replacement": "座右铭", "note": "座右铭为规范形式"}
       ]
     },
     "common_errors": {
@@ -129,24 +128,16 @@
         {"word": "唯一的一个", "replacement": "唯一", "note": "语义重复"},
         {"word": "非常十分", "replacement": null, "note": "重复副词"},
         {"word": "最为最", "replacement": null, "note": "重复副词"},
-        {"word": "他们的人", "replacement": null, "note": "语义重复"},
-        {"word": "凯旋归来", "replacement": "凯旋", "note": ""凯旋"已含"归来"之义，重复"},
-        {"word": "凯旋而归", "replacement": "凯旋", "note": ""凯旋"已含"归来"之义"},
-        {"word": "忍俊不禁地笑", "replacement": "忍俊不禁", "note": ""忍俊不禁"已含"笑"义"},
-        {"word": "贻笑大方之家", "replacement": "贻笑大方", "note": ""大方"即"大方之家"，无需重复"},
-        {"word": "差强人意", "replacement": null, "note": "注意：此词意为"尚可满意"，常被误用为"勉强不能令人满意""},
-        {"word": "一场浩劫", "replacement": null, "note": ""浩劫"本身已含规模大的意思，"一场"可省"},
-        {"word": "令人堪忧", "replacement": "令人忧虑/堪忧", "note": ""令人"和"堪"功能重叠"},
-        {"word": "相濡以沫", "replacement": null, "note": "注意：原义为困境中互助，不适用于一般友情"},
-        {"word": "首当其冲", "replacement": null, "note": "注意：此词为贬义，意为首先受到冲击，常被误用"},
-        {"word": "望其项背", "replacement": null, "note": "注意：只用于"难以望其项背"，表示赶不上"},
-        {"word": "空穴来风", "replacement": null, "note": "注意：本义为有根据，常被误用为"无中生有""},
-        {"word": "炙手可热", "replacement": null, "note": "注意：此词为贬义，指权势显赫，不用于物品流行"},
-        {"word": "不以为然", "replacement": null, "note": "注意：意为"不认为是对的"，不等于"不在乎""},
-        {"word": "目无全牛", "replacement": null, "note": "注意：此词为褒义，指技艺纯熟"},
-        {"word": "在……的基础上", "replacement": null, "note": "检查是否属于文件腔，学术文中酌情简化"},
-        {"word": "与此同时", "replacement": null, "note": "出现频率高时，检查是否属于套话"},
-        {"word": "对此", "replacement": null, "note": "频繁使用时，检查指代是否清晰"}
+        {"word": "凯旋归来", "replacement": "凯旋", "note": "凯旋已含归来之义，重复"},
+        {"word": "凯旋而归", "replacement": "凯旋", "note": "凯旋已含归来之义"},
+        {"word": "忍俊不禁地笑", "replacement": "忍俊不禁", "note": "忍俊不禁已含笑义"},
+        {"word": "令人堪忧", "replacement": "令人忧虑", "note": "令人和堪功能重叠"},
+        {"word": "众所周知", "replacement": null, "note": "学术写作应有论据支撑而非断言"},
+        {"word": "毫无疑问", "replacement": null, "note": "学术写作应有论据支撑"},
+        {"word": "不言而喻", "replacement": null, "note": "学术写作应有论据支撑"},
+        {"word": "由于…的原因", "replacement": "由于", "note": "由于和原因功能重叠"},
+        {"word": "原因是因为", "replacement": "原因是", "note": "原因是和因为功能重叠"},
+        {"word": "发行数量提高", "replacement": "发行数量增加", "note": "数量应增加减少而非提高降低"}
       ]
     },
     "publishing_standards": {
@@ -154,30 +145,13 @@
       "level": "L2",
       "strategy": "warning",
       "words": [
-        {"word": "公元前后", "replacement": null, "note": "应明确标注"公元前X年"或"公元X年""},
+        {"word": "公元前后", "replacement": null, "note": "应明确标注公元前X年或公元X年"},
         {"word": "几十万", "replacement": null, "note": "出版物中应使用确切数字"},
         {"word": "大概", "replacement": null, "note": "学术出版物中应避免模糊表述"},
-        {"word": "众所周知", "replacement": null, "note": "学术写作中应避免此类断言性套话"},
-        {"word": "毫无疑问", "replacement": null, "note": "学术写作应有论据支撑而非断言"},
-        {"word": "不言而喻", "replacement": null, "note": "学术写作应有论据支撑"},
-        {"word": "如前所述", "replacement": null, "note": "频繁出现时检查是否实为重复叙述"},
         {"word": "等等", "replacement": null, "note": "出版物中建议穷举或说明省略依据"},
         {"word": "笔者认为", "replacement": null, "note": "学术写作中检查是否应改为客观表述"},
-        {"word": "个人认为", "replacement": null, "note": "学术出版物中应避免过于口语化表达"}
-      ]
-    },
-    "number_format_errors": {
-      "description": "数字使用规范（依据GB/T 15834、GB/T 15835）",
-      "level": "L3",
-      "strategy": "warning",
-      "words": [
-        {"word": "0年代", "replacement": null, "note": "检查年代表述：应为"XX世纪XX年代"格式"},
-        {"word": "二十一世纪", "replacement": "21世纪", "note": "出版规范：公历世纪宜用阿拉伯数字"},
-        {"word": "二O", "replacement": null, "note": "年份中"O"应为"〇"（零的中文特殊写法）"},
-        {"word": "二0", "replacement": null, "note": "年份中应用"○"而非阿拉伯数字"0""},
-        {"word": "1、2、3", "replacement": null, "note": "行文中的序号若非列表，可考虑改为"第一、第二、第三""},
-        {"word": "百分之百", "replacement": "100%", "note": "百分数宜用"%"表示"},
-        {"word": "千分之", "replacement": null, "note": "千分数宜用"‰"表示"}
+        {"word": "个人认为", "replacement": null, "note": "学术出版物中应避免过于口语化表达"},
+        {"word": "据悉", "replacement": null, "note": "学术出版物中应避免无来源的据悉"}
       ]
     },
     "grammar_errors": {
@@ -185,16 +159,8 @@
       "level": "L3",
       "strategy": "warning",
       "words": [
-        {"word": "的的确确", "replacement": null, "note": "叠词使用检查"},
-        {"word": "他高兴的跑", "replacement": "他高兴地跑", "note": ""的"修饰名词，"地"修饰动词"},
-        {"word": "我深刻的认识", "replacement": "我深刻地认识", "note": ""深刻"修饰动词，应用"地""},
-        {"word": "做的好", "replacement": "做得好", "note": ""得"用于动词后接补语"},
-        {"word": "跑的快", "replacement": "跑得快", "note": ""得"用于动词后接补语"},
-        {"word": "被…所", "replacement": null, "note": ""被"和"所"功能重叠，如"被所迫"应为"被迫"或"为…所迫""},
-        {"word": "对于…来说", "replacement": null, "note": ""对于"和"来说"功能重叠，择一使用"},
-        {"word": "由于…的原因", "replacement": "由于", "note": ""由于"和"原因"功能重叠"},
-        {"word": "原因是因为", "replacement": "原因是/因为", "note": ""原因是"和"因为"功能重叠"},
-        {"word": "是否…与否", "replacement": null, "note": ""是否"和"与否"功能重叠"}
+        {"word": "被所迫", "replacement": "被迫", "note": "被和所功能重叠"},
+        {"word": "是否…与否", "replacement": null, "note": "是否和与否功能重叠"}
       ]
     },
     "legal_terms": {
@@ -208,8 +174,7 @@
         {"word": "伪造", "replacement": null, "note": "涉及法律风险，需核实指控是否有据"},
         {"word": "内部资料", "replacement": null, "note": "检查是否涉及未经授权引用的内部文件"},
         {"word": "绝密", "replacement": null, "note": "检查是否涉及保密内容"},
-        {"word": "机密", "replacement": null, "note": "检查是否涉及保密内容"},
-        {"word": "秘密文件", "replacement": null, "note": "检查是否涉及保密内容"}
+        {"word": "机密", "replacement": null, "note": "检查是否涉及保密内容"}
       ]
     },
     "academic_integrity": {
@@ -218,55 +183,11 @@
       "strategy": "manual_review",
       "words": [
         {"word": "转引自", "replacement": null, "note": "转引文献需注明原始出处，检查是否规范"},
-        {"word": "引自", "replacement": null, "note": "确认引文与原文是否一致"},
-        {"word": "据悉", "replacement": null, "note": "学术出版物中应避免无来源的"据悉""},
         {"word": "有研究表明", "replacement": null, "note": "需注明具体研究来源"},
         {"word": "有学者认为", "replacement": null, "note": "需注明具体学者姓名和出处"},
-        {"word": "国外有研究", "replacement": null, "note": "需注明具体来源"},
         {"word": "据报道", "replacement": null, "note": "需注明具体报道来源"},
         {"word": "AI生成", "replacement": null, "note": "检查是否存在AI生成内容未经说明"},
-        {"word": "ChatGPT", "replacement": null, "note": "检查AI内容是否已声明"},
-        {"word": "数据来源不详", "replacement": null, "note": "学术出版物中数据必须有明确来源"}
-      ]
-    },
-    "standardized_geographic_names": {
-      "description": "地名规范：外国或台湾使用的非标准称谓（依据中宣部出版物质量检测中心案例）",
-      "level": "L1",
-      "strategy": "manual_review",
-      "words": [
-        {"word": "斯普拉特利群岛", "replacement": "南沙群岛", "note": "中国大陆标准名称为"南沙群岛""},
-        {"word": "Spratly Islands", "replacement": "Nansha Islands", "note": "英文出版物中应使用中国标准名称"},
-        {"word": "埃佛勒斯峰", "replacement": "珠穆朗玛峰", "note": "殖民时期西方命名，应使用中国标准名称"},
-        {"word": "额菲尔士峰", "replacement": "珠穆朗玛峰", "note": "殖民时期西方命名"},
-        {"word": "阿鲁纳恰尔邦", "replacement": "我国藏南地区", "note": "中国不承认印度设立此邦的合法性"},
-        {"word": "东土耳其斯坦", "replacement": "我国新疆", "note": "非法称谓，中国政府不予承认"},
-        {"word": "西海海域", "replacement": "黄海海域", "note": "朝鲜/韩国使用的称谓，国际社会通用"黄海""},
-        {"word": "西海", "replacement": "黄海", "note": "指黄海时应使用"黄海""},
-        {"word": "南朝鲜", "replacement": "韩国", "note": "韩国正式国名为"大韩民国"（Republic of Korea），简称韩国"},
-        {"word": "汉城", "replacement": "首尔", "note": "2005年韩国首都已正式更名为首尔"},
-        {"word": "蒙古人民共和国", "replacement": "蒙古国", "note": "1992年蒙古已改国名为"蒙古国""},
-        {"word": "西藏自治区政府", "replacement": null, "note": "注意上下文是否有分裂倾向"},
-        {"word": "台湾法律", "replacement": "台湾地区有关规定", "note": "应称"台湾地区有关规定"，不称"台湾法律""},
-        {"word": "钓鱼台", "replacement": "钓鱼岛", "note": "大陆标准名称为"钓鱼岛"（台湾称"钓鱼台"）"},
-        {"word": "福摩萨", "replacement": "台湾", "note": "殖民时期西方称谓，应改为"台湾""},
-        {"word": "福尔摩萨", "replacement": "台湾", "note": "殖民时期西方称谓，应改为"台湾""}
-      ]
-    },
-    "standardized_institution_names": {
-      "description": "机构名称规范：台湾、历史相关机构名称的正确使用",
-      "level": "L1",
-      "strategy": "manual_review",
-      "words": [
-        {"word": "台湾国立大学", "replacement": null, "note": "台湾大学的"国立"前缀应删去，改为"台湾×××大学""},
-        {"word": "台湾国立清华大学", "replacement": "台湾清华大学", "note": "应删去"国立"前缀"},
-        {"word": "台湾国立台湾大学", "replacement": "台湾大学", "note": "应删去"国立"前缀"},
-        {"word": "国大代表", "replacement": null, "note": "台湾"国大代表"为非法机构代表，应加以说明"},
-        {"word": "台湾国大", "replacement": null, "note": "国民大会（国大）为非法机构"},
-        {"word": "民国纪年", "replacement": null, "note": "1949年后不应使用民国纪年，应转换为公元纪年"},
-        {"word": "政务院", "replacement": null, "note": "政务院1954年改为国务院，需核实使用的时间段"},
-        {"word": "摩梭族", "replacement": "摩梭人", "note": "摩梭人是纳西族的一支，不是独立民族，应称"摩梭人""},
-        {"word": "WTO成员国", "replacement": null, "note": "WTO成员中有香港、澳门、中国台北（台湾），应注意不将其列为"国家""},
-        {"word": "中共中央政府", "replacement": "党和政府", "note": "中共是政党，不是政府，不应合称"中共中央政府""}
+        {"word": "ChatGPT", "replacement": null, "note": "检查AI内容是否已声明"}
       ]
     },
     "political_leader_quotes": {
@@ -274,13 +195,11 @@
       "level": "L1",
       "strategy": "manual_review",
       "words": [
-        {"word": "公正法制", "replacement": "公正法治", "note": "社会主义核心价值观中是"法治"不是"法制""},
-        {"word": "法制 爱国", "replacement": "法治 爱国", "note": "社会主义核心价值观中是"法治""},
-        {"word": "有中国特色社会主义", "replacement": null, "note": "注意历史阶段：十二大是"有中国特色的社会主义"（含"有"字和"的"字）"},
-        {"word": "中国特色社会主义", "replacement": null, "note": "检查引用的历史阶段是否正确（十六大后用此表述，之前有"有"和"的"）"},
         {"word": "文艺讲话", "replacement": "在文艺工作座谈会上的讲话", "note": "习近平讲话完整题目，简化会导致读者无法检索"},
-        {"word": "节约资源和保护环境", "replacement": "节约能源资源和保护生态环境", "note": "十七大报告原文是"节约能源资源和保护生态环境""},
-        {"word": "南巡讲话", "replacement": "南方谈话", "note": "邓小平1992年南巡的讲话正式名称是"南方谈话"，不是"南巡讲话""}
+        {"word": "节约资源和保护环境", "replacement": "节约能源资源和保护生态环境", "note": "十七大报告原文"},
+        {"word": "台湾国立大学", "replacement": null, "note": "台湾院校的国立前缀应删去，改为台湾×××大学"},
+        {"word": "台湾国立清华大学", "replacement": "台湾清华大学", "note": "应删去国立前缀"},
+        {"word": "中共中央政府", "replacement": "党和政府", "note": "中共是政党不是政府，不应合称中共中央政府"}
       ]
     }
   }

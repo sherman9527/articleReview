@@ -28,7 +28,9 @@ make_detailed_kb.py
 preliminary_analysis.txt
 extracted_handbook.txt
 handbook_summary.txt
-# 知识库原始书籍（文件太大）
+# 知识库原始书籍（PDF体积过大71MB/85MB，且涉及版权，请自行获取放置到knowledge/目录）
 knowledge/*.pdf
-knowledge/*.epub
+# 临时提取文件
 knowledge/epub_text_content.txt
+# 临时修复脚本
+fix_json.py

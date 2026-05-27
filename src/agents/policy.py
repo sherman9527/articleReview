@@ -6,6 +6,7 @@ from .base import BaseAgent
 class PolicyAgent(BaseAgent):
     name = "policy"
     description = "出版合规与政策审核"
+    timeout = 900
 
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\
