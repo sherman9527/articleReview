@@ -73,7 +73,11 @@ def generate_report(results: dict, source_file: str = "", output_dir: Path | Non
 
     html_content = _wrap_html(f"审稿报告 — {esc(display_title)}", "\n".join(body_parts))
 
-    out_path = manuscript_dir / "审核报告.html"
+    # Filename: 审核报告-<书名>-<页码范围>.html
+    safe_base = re.sub(r'[\s<>:"/\\|?*]+', '-', base_name).strip('-')[:60]
+    safe_base = re.sub(r'-\d+$', '', safe_base)  # strip trailing -1, -2 etc.
+    page_suffix = f"-{page_range}" if page_range else ""
+    out_path = manuscript_dir / f"审核报告-{safe_base}{page_suffix}.html"
     out_path.write_text(html_content, encoding="utf-8")
     return out_path
 
