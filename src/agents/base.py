@@ -29,12 +29,8 @@ class BaseAgent:
         result = call_claude_json(prompt, timeout=self.timeout or None)
 
         if result.get("_parse_error"):
-            print(f"  [WARN] {self.name}: JSON 解析失败，使用原始响应", file=sys.stderr)
-            import re as _re
-            raw = result.get("_raw", "")
-            # Strip markdown code fences and keep only plain text for summary
-            raw_clean = _re.sub(r'```[a-z]*\n?', '', raw).strip()
-            result["summary"] = f"[AI输出格式异常，原始响应片段] {raw_clean[:300]}"
+            print(f"  [WARN] {self.name}: JSON 解析失败，已记录错误", file=sys.stderr)
+            result["summary"] = f"[{self.description}：AI输出格式异常，请检查原始日志]"
 
         result = self.post_process(result, metadata)
 

@@ -6,7 +6,7 @@ from .base import BaseAgent
 class LanguageAgent(BaseAgent):
     name = "language"
     description = "语言质量审核"
-    timeout = 900
+    timeout = 1800
 
     def build_prompt(self, text: str, metadata: dict) -> str:
         return f"""\

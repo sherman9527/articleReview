@@ -6,32 +6,37 @@ from .base import BaseAgent
 class CitationAgent(BaseAgent):
     name = "citation"
     description = "引文与参考文献检查"
-    timeout = 1200
+    timeout = 1800
 
     def build_prompt(self, text: str, metadata: dict) -> str:
         # Step 1: extract raw citation texts only (minimal output to avoid timeout)
         return f"""\
 请从以下文档中找出所有引用和参考文献，只输出原始文本，不做分析。
-包括：正文中的括号引用（如"（李明，2015）""[1]"）、脚注引用、尾注引用、参考文献列表中的每一条目。
+包括：正文中的括号引用（如（李明，2015）、[1]）、脚注引用、尾注引用、参考文献列表中的每一条目。
+
+## 重要：JSON 输出规范
+- raw_text 字段中，若原文包含英文双引号 " 请替换为中文引号「」，避免破坏 JSON 格式
+- raw_text 中的特殊字符（如 & # ! * 等）直接保留，不需要转义
+- 若原文包含反斜杠 \\ 请删去
+- 每条 raw_text 限制在 200 字以内，超长则截断
 
 ## 文档内容
 \"\"\"
 {text}
 \"\"\"
 
-## 输出格式（只返回 JSON，不要其他说明）
-```json
+## 输出格式（只返回 JSON，不要其他说明，不要 markdown 代码块）
 {{
   "citations_found": [
-    {{"index": 1, "raw_text": "完整引文原文", "citation_type": "bibliography|footnote|inline", "fields": {{"authors": "", "title": "", "year": "", "publisher": "", "journal": "", "volume": "", "issue": "", "doi": "", "isbn": "", "pages": "", "url": ""}}, "format": "unknown", "completeness": "complete", "location": ""}}
+    {{"index": 1, "raw_text": "完整引文原文（内部引号用「」）", "citation_type": "bibliography", "location": "第X页"}}
   ],
-  "issues": [],
-  "detected_format": "none",
+  "detected_format": "unknown",
   "total_citations": 0,
   "summary": "共找到X条引文"
 }}
-```
-每条引文只需 raw_text 和 citation_type，其余字段留空即可。如无引文则 citations_found 为空数组。"""
+
+citation_type 取值：bibliography（参考文献列表）、footnote（脚注）、inline（正文行内）
+如无引文则 citations_found 为空数组。"""
 
     def post_process(self, result: dict, metadata: dict) -> dict:
         """Step 2: analyse each citation individually for format and completeness issues."""
