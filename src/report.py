@@ -315,17 +315,6 @@ def _section_structure(sr: dict) -> str:
     if summary:
         parts.append(f'<div class="summary-block"><strong>结构总评：</strong>{esc(summary)}</div>')
 
-    chapters = sr.get("chapters", [])
-    if chapters:
-        parts.append(f'<details class="details-block"><summary class="details-summary">识别到的章节（共 {len(chapters)} 个）— 点击展开</summary>')
-        parts.append('<ul class="chapter-list">')
-        for ch in chapters:
-            indent = int(ch.get("level", 1)) - 1
-            parts.append(f'<li style="padding-left:{indent * 20 + 8}px">'
-                         f'<span class="ch-path">{esc(ch.get("path", ""))}</span> '
-                         f'{esc(ch.get("title", ""))}</li>')
-        parts.append('</ul></details>')
-
     issues = sr.get("structure_issues", [])
     if issues:
         parts.append(f'<div class="subsection-label">结构问题（共 {len(issues)} 项）</div>')

@@ -111,13 +111,25 @@ def _clean_pdf_page(text: str) -> str:
         readable = chinese + latin + digits + punct
 
         # Drop lines where less than 40% of chars are readable
-        # (these are typically garbled symbol sequences from bad font encoding)
         if total >= 8 and readable / total < 0.40:
             continue
 
         # Drop lines that are mostly non-printable or control-range characters
         garbage = len(re.findall(r'[\x00-\x1f\x7f-\x9f]', line_s))
         if garbage > total * 0.2:
+            continue
+
+        # Drop lines with high density of encoding-artifact symbols (! & # * % $ @ ^)
+        # These appear when PyMuPDF encounters PDFs with incomplete font ToUnicode maps.
+        # Real Chinese text rarely has many of these ASCII punctuation chars.
+        artifacts = len(re.findall(r'[!&#*%$@^]', line_s))
+        if total >= 6 and artifacts / total > 0.25:
+            continue
+
+        # Drop lines that look like garbled footnote/citation OCR artifacts:
+        # pattern: mix of brackets/parens with artifacts and sparse Chinese
+        # e.g. "(!&#!*\n年第\n&期" — Chinese chars < 20% AND artifacts > 15%
+        if total >= 10 and chinese / total < 0.20 and artifacts / total > 0.15:
             continue
 
         cleaned_lines.append(line)
