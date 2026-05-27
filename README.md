@@ -64,7 +64,8 @@ python review.py book/manuscript.pdf --no-email
 | `GMAIL_USER` | — | Gmail 发件地址 |
 | `GMAIL_APP_PASSWORD` | — | Gmail 应用专用密码（非登录密码） |
 | `BCC_TO` | — | BCC 收件人，分号分隔 |
-| `MAX_PAGES` | `50` | PDF 最大分析页数 |
+| `MAX_PAGES` | `50` | 每批分析的页数 |
+| `START_PAGE` | `1` | 起始页码（用于分批审核，如第二批设为 51） |
 | `LLM_TIMEOUT` | `600` | Claude CLI 单次超时（秒） |
 | `MAX_TEXT_LENGTH` | `80000` | 每个 Agent 的最大输入字符数 |
 | `ENABLE_SCHOLAR` | 未设置 | 设为 `1` 启用 Google Scholar（易被反爬虫阻断） |

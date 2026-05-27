@@ -64,9 +64,12 @@ def _parse_pdf(path: Path) -> ParsedDocument:
     doc = fitz.open(str(path))
     total_pages = len(doc)
     max_pages = getattr(config, 'MAX_PAGES', 0) or total_pages
+    start_page = getattr(config, 'START_PAGE', 1)
     pages_text: list[str] = []
     for i, page in enumerate(doc, 1):
-        if i > max_pages:
+        if i < start_page:
+            continue
+        if i >= start_page + max_pages:
             break
         page_text = page.get_text()
         if page_text.strip():
