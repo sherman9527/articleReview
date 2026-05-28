@@ -69,6 +69,8 @@ def main():
     max_pages = getattr(config, 'MAX_PAGES', 50)
     start_page = getattr(config, 'START_PAGE', 1)
     end_page = start_page + max_pages - 1
+    if doc.page_count:
+        end_page = min(end_page, doc.page_count)
     page_range = f"第{start_page}-{end_page}页"
     manuscript_dir = config.OUTPUT_DIR / f"{base_name}-{page_range}"
     refs_dir = manuscript_dir / "references"
